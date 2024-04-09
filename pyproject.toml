@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name =  "pyMRI"
+version = "2024.04.09"
+description = "pyMRI is a library developed throughout my master's degree to help me with my research. "
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["MRI", "Magnetic Resonance Imaging", "Spin-echo", "physics"]
+dependencies = ["numpy>=1.26"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["pyMRI"]
