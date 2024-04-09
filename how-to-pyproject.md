@@ -55,4 +55,6 @@ Inside the pyproject.toml folder.
 
 3. Packaging Python Projects [https://packaging.python.org/en/latest/tutorials/packaging-projects/](https://packaging.python.org/en/latest/tutorials/packaging-projects/)
 
+4. Python Packaging Glossary [https://packaging.python.org/en/latest/glossary/#term-Build-Backend](https://packaging.python.org/en/latest/glossary/#term-Build-Backend)
+
 
