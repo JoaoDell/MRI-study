@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Literal
 
 T1_EXAMPLES = {'Substância Branca' : 790*1e-3, 
                'Substância cinzenta' : 920*1e-3, 
@@ -18,7 +19,11 @@ T2_EXAMPLES = {'Substância Branca' : 90*1e-3,
                'Músculo' : 50*1e-3,
                'Lipídios (gordura)' : 80*1e-3}
 
-def single_transverse_decay(t : np.ndarray, T2 : float,  M_0: float, w : float, phi : float):
+def single_transverse_decay(t : np.ndarray, 
+                            T2 : float,  
+                            M_0: float, 
+                            w : float, 
+                            phi : float):
     """Simulates the transverse decay of the magnetization of a single spin.
     
     Parameters
@@ -36,8 +41,17 @@ def single_transverse_decay(t : np.ndarray, T2 : float,  M_0: float, w : float, 
     """
     return M_0*np.exp( 1j*(w*t + phi) )*np.exp(-t/T2)
 
-def population_transverse_decay(t0 : float, tn : float, dt : float, T2 : np.ndarray, M_0: float, w : np.ndarray, phi : np.ndarray, echo : np.ndarray):
-  """Simulates the transverse decay of the magnetization of a population of spins.
+def population_transverse_decay(t0 : float, 
+                                tn : float, 
+                                dt : float, 
+                                T2 : np.ndarray, 
+                                M_0: float, 
+                                w : np.ndarray, 
+                                phi : np.ndarray, 
+                                echo : np.ndarray,
+                                return_phase : bool = False):
+  """Simulates the transverse decay of the magnetization of a population of spins. 
+  Echoes before and after t0 and tn are filtered out.
 
   Parameters
     ----------
@@ -60,21 +74,44 @@ def population_transverse_decay(t0 : float, tn : float, dt : float, T2 : np.ndar
   n = T2.shape[0]
 
   S = np.array([])
+
+  filtered_echoes = echo[t0 < echo]
+  filtered_echoes = filtered_echoes[filtered_echoes < tn]
    
-  ts = np.concatenate((np.array([t0]), echo, np.array([tn])))
+  ts = np.concatenate((np.array([t0]), filtered_echoes, np.array([tn])))
 
   acc_phi = np.copy(phi)
 
   for k in range(ts.shape[0] - 1):
     t = np.arange(ts[k], ts[k + 1], dt)
     Dt = ts[k + 1] - t0
-    S0 = np.zeros_like(t)
+    theta = w*Dt
 
-    for i in range(n):
-      S0 += single_transverse_decay(t, T2[i], M_0, w[i], acc_phi[i]).real
-      theta = w[i]*Dt
-      acc_phi[i] += np.pi - 2*theta - 2*acc_phi[i]
-      
+    S0 = np.sum(np.array([single_transverse_decay(t, T2[i], M_0, w[i], acc_phi[i]).real for i in range(n)]), axis = 0)
+    
+    if ts[k + 1] != tn:
+      acc_phi += - 2*(theta + acc_phi)
+
     S = np.concatenate((S, S0))
 
-  return S, np.arange(t0, tn, dt) 
+
+  if return_phase == False:
+    return S, np.arange(t0, tn, dt)
+  else:
+    return S, np.arange(t0, tn, dt), acc_phi
+    
+  
+
+def max_frequency(t0 : float, tn : float, dt : float):
+  """Returns the maximum frequency that can be captured 
+  by the given sampling parameters, according to the Nyquist rate.
+  
+  Parameters
+  ----------
+  t0 : float
+    Initial time of the simulation.
+  tn : float
+    Final time of the simulation.
+  dt : float
+    Time step of the simulation."""
+  return ((tn - t0)/dt)/2.0

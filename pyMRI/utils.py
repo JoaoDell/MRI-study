@@ -1,6 +1,8 @@
 import numpy as np
 
-def rerange(img : np.ndarray, min = 0.0, max = 1.0):
+def rerange(img : np.ndarray, 
+            min = 0.0, 
+            max = 1.0):
   """Function that converts an image to the given desired range.
   
   Parameters
@@ -24,7 +26,9 @@ def normalize(vec : np.ndarray) -> np.ndarray:
   return vec/np.tile(np.linalg.norm(vec, axis = 0), vec.shape[0]).reshape(vec.shape)
 
 
-def rotation_matrix(alpha : float, beta : float, gamma : float):
+def rotation_matrix(alpha : float, 
+                    beta : float, 
+                    gamma : float):
     """Returns the final rotation matrix from the multiplication 
     of the three rotation matrices in the following order: Rxy*Rxz*Ryz, 
     which means it first rotates around the x axis, then around the y axis, 
@@ -56,13 +60,20 @@ def rotation_matrix(alpha : float, beta : float, gamma : float):
     """
 
     
-    R = np.matrix([[np.cos(alpha)*np.cos(beta), np.cos(alpha)*np.sin(beta)*np.sin(gamma) - np.sin(alpha)*np.cos(gamma), np.cos(alpha)*np.sin(beta)*np.cos(gamma) + np.sin(alpha)*np.sin(gamma)], 
-                   [np.sin(alpha)*np.cos(beta), np.sin(alpha)*np.sin(beta)*np.sin(gamma) + np.cos(alpha)*np.cos(gamma), np.sin(alpha)*np.sin(beta)*np.cos(gamma) - np.cos(alpha)*np.sin(gamma)], 
+    R = np.matrix([[np.cos(alpha)*np.cos(beta), np.cos(alpha)*np.sin(beta)*np.sin(gamma) - 
+                    np.sin(alpha)*np.cos(gamma), np.cos(alpha)*np.sin(beta)*np.cos(gamma) + 
+                    np.sin(alpha)*np.sin(gamma)], 
+                   [np.sin(alpha)*np.cos(beta), np.sin(alpha)*np.sin(beta)*np.sin(gamma) + 
+                    np.cos(alpha)*np.cos(gamma), np.sin(alpha)*np.sin(beta)*np.cos(gamma) - 
+                    np.cos(alpha)*np.sin(gamma)], 
                    [-np.sin(beta), np.cos(beta)*np.sin(gamma), np.cos(beta)*np.cos(gamma)]])
     
     return R
 
-def rotate(vec : np.ndarray, alpha : float, beta : float, gamma : float):
+def rotate(vec : np.ndarray, 
+           alpha : float, 
+           beta : float, 
+           gamma : float):
     """Rotates a 3D array or set of arrays by a certain set of angles, in radians. 
     The order of rotation is Rxy*Rxz*Ryz, so it first rotates around 
     the x axis, then around the y axis, then around the z axis. 
@@ -84,7 +95,10 @@ def rotate(vec : np.ndarray, alpha : float, beta : float, gamma : float):
     
     return np.asarray((R*np.matrix(vec).T).T)
 
-def apply_B(M : np.ndarray, B : np.ndarray, gamma : float, dt : float):
+def apply_B(M : np.ndarray, 
+            B : np.ndarray, 
+            gamma : float, 
+            dt : float):
   """Applies a magnetic field B onto a magnetic moment M in a 
      certain interval dt, making it rotate about an angle w*dt, 
      with w = gamma*B_z, gamma being the gyromagnetic ratio of 
