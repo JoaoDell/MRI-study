@@ -41,36 +41,74 @@ def single_transverse_decay(t : np.ndarray,
     """
     return M_0*np.exp( 1j*(w*t + phi) )*np.exp(-t/T2)
 
+def B_gradient(x : np.ndarray, G : float, type : Literal["linear", "quadratic"]):
+    """Generates a magnetic field gradient.
+
+    Parameters
+    ----------
+    x : np.ndarray
+      Positions.
+    G : float
+      Gradient rate
+    type : str
+      Gradient shape. The gradient shapes available are:
+      1. "linear" : A linear gradient shape.
+      2. "quadratic" : A quadratic gradient shape.
+      """
+    if type == "linear":
+        return G*x
+    elif type == "quadratic":
+        return G*x**2
+    
+def generate_ws(B0 : float, pos : np.ndarray, G : float, gamma : float):
+  """Generates the precession frequencies for the population.
+
+  Parameters
+  ----------
+  B0 : float
+    B0 field of the simulation.
+  pos : np.ndarray
+    Positions of the population.
+  G : float
+    Gradient value.
+  gamma : float
+    Gamma of the population.
+  """
+  DB = B_gradient(pos, G, 'linear')
+  return gamma*(B0 + DB)
+
 def population_transverse_decay(t0 : float, 
                                 tn : float, 
                                 dt : float, 
-                                T2 : np.ndarray, 
-                                M_0: float, 
-                                w : np.ndarray, 
-                                phi : np.ndarray, 
+                                population : tuple,  
                                 echo : np.ndarray,
                                 return_phase : bool = False):
   """Simulates the transverse decay of the magnetization of a population of spins. 
   Echoes before and after t0 and tn are filtered out.
 
   Parameters
-    ----------
+  ----------
     t0 : float
       Initial time of the simulation.
     tn : float
       Final time of the simulation.
     dt : float
       Time step of the simulation.
-    T2 : np.ndarray (N, 1)
-      Decaying times of the transverse magnetizations of each spin.
-    M_0 : float
-      Initial magnetization constant.
-    w : np.ndarray (N, 1)
-      Frequencies of precession of the spins.
-    phi : float
-      Phases of the magnetization of each spin.
+    population : tuple (7)
+      Tuple with all the information of the population, in order: 
+      1. Spins positions.
+      2. B0 value.
+      3. Gradient value.
+      4. Gamma of the population.
+      5. Decaying time T2.
+      6. Initial magnetization value of each spin. 
+      7. Initial phase of each spin.
     echo : np.ndarray (M, 1)
       Echoes times to be applied to the simulation."""
+
+  spins_x, B0, G, gamma, T2, M_0, phi = population
+  w = generate_ws(B0, spins_x, G, gamma)
+
   n = T2.shape[0]
 
   S = np.array([])
@@ -94,14 +132,13 @@ def population_transverse_decay(t0 : float,
 
     S = np.concatenate((S, S0))
 
+  acc_phi += 2*theta
 
   if return_phase == False:
     return S, np.arange(t0, tn, dt)
   else:
     return S, np.arange(t0, tn, dt), acc_phi
     
-  
-
 def max_frequency(t0 : float, tn : float, dt : float):
   """Returns the maximum frequency that can be captured 
   by the given sampling parameters, according to the Nyquist rate.
@@ -115,3 +152,39 @@ def max_frequency(t0 : float, tn : float, dt : float):
   dt : float
     Time step of the simulation."""
   return ((tn - t0)/dt)/2.0
+
+
+def population(pos : np.ndarray, B0 : float, G : float, gamma : float, T2s : np.ndarray, M_0 : float, phi : np.ndarray):
+  """Returns a tuple with the population ordered parameters.
+   
+  Parameters
+  ----------
+  pos : np.ndarray
+    Spins positions.
+  B0 : float
+    B0 value.
+  G : float
+    Gradient value.
+  gamma : float
+    Gamma of the population.
+  T2s : np.ndarray
+    Decaying time T2.
+  M_0 : float
+    Initial magnetization value of each spin. 
+  phi : np.ndarray
+    Initial phase of each spin.
+  """
+  return (pos, B0, G, gamma, T2s, M_0, phi)
+
+def event(t : float, echo : bool, ws : np.ndarray):
+  """Returns a tuple with the ordered information of the event.
+  
+  Parameters
+  ----------
+  t : float
+    Time of the event.
+  echo : bool
+    Whether an echo occurs or not in the time provided.
+  ws : np.ndarray
+    Frequencies of the spin population."""
+  return (t, echo,  ws)
