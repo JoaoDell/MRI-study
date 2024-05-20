@@ -149,3 +149,15 @@ def apply_B(M : np.ndarray,
   back = np.array((new_coord.T*np.matrix(rotated).T)).T[0]
   
   return back
+
+def RMSE(img1, img2):
+  """Function that calculates the [Root Mean Squared Error (RMSE)](https://en.wikipedia.org/wiki/Root_mean_square_deviation) between img1 and img2.
+  
+  Parameters
+  ----------
+  
+  img1 : np.ndarray
+    First image to be compared.
+  img2 : np.ndarray
+    Second image to be compared."""
+  return np.sqrt((np.sum((img1 - img2)**2))/(float(img1.shape[0]*img1.shape[1])))
