@@ -1,0 +1,8 @@
+# Books 
+books/
+articles/
+
+#compiled, cache, etc
+__pycache__/
+*.pyc
+
