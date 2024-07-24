@@ -161,3 +161,45 @@ def RMSE(img1, img2):
   img2 : np.ndarray
     Second image to be compared."""
   return np.sqrt((np.sum((img1 - img2)**2))/(float(img1.shape[0]*img1.shape[1])))
+
+def gaussian_filter(size, epsilon):
+    x_l, y_l = size
+    x_ = np.arange(-x_l//2, x_l//2, 1.0)
+    y_ = np.arange(-y_l//2, y_l//2, 1.0)
+    x, y = np.meshgrid(x_, y_)
+    
+    g = (1/epsilon*np.sqrt(2*np.pi))*np.exp(-0.5*(x**2 + y**2)/epsilon**2)
+    
+    return rerange(g)
+
+
+def sinc_f(x):
+    """Returns a sinc function of x.
+     
+    Parameters
+    ----------
+    x : any
+      Value(s)"""
+    if type(x) == np.ndarray:
+        f = np.sin(x)/x
+        f[np.isnan(f)] = 1.0
+        return f.astype(np.float32)
+    elif x == 0.0:
+        return 1.0
+    else:
+        return np.sin(x)/x
+    
+def square_f(x, e_square):
+    """Returns a square function of x.
+    
+    Parameters
+    ----------
+    
+    x : any
+      Value(s) of x.
+    e_square : float
+      Square limit."""
+    square = np.ones_like(x, dtype = np.float32)
+    square[x < -e_square] = 0.0
+    square[x > e_square] = 0.0
+    return square
