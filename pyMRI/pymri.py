@@ -148,6 +148,41 @@ def population_transverse_decay(t0 : float,
     return S, np.arange(t0, tn, dt)
   else:
     return S, np.arange(t0, tn, dt), acc_phi
+  
+def corrupted_lw(w : float, 
+                 size : float, 
+                 dw : float,
+                 T2 : float,
+                 M_0: float,
+                 phi : float):
+   """Returns a population with a range of T2s for linewidth (LW) broadening.
+    
+      Parameters
+      ----------
+      w : float
+        Central angular frequency of the population.           [rad/s]
+      size : float [0.0, +inf]                  
+        Size, in percentage of w (%), of the range radius of w.
+      dw : float                                               [s]
+        w step.          
+      T2 : float                                               [s]
+        Decaying time T2.                                      [s]
+      M_0 : float        
+        Initial magnetization value.                           [T]
+      phi : float        
+        Initial phase.                                         [rad]
+        """
+   w_0 = w*( 1.0 - size )
+   w_n = w*( 1.0 + size )
+
+   ws = np.arange(w_0, w_n, dw)
+   T2s = np.repeat(T2, ws.size)
+   phis = np.repeat(phi, ws.size)
+
+   return population(ws, T2s, M_0, phis)
+
+def corrupted_snr():
+   pass
     
 def max_frequency(dt : float):
   """Returns the maximum frequency, in Hz that can be captured 
