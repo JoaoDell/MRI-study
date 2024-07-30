@@ -181,8 +181,35 @@ def corrupted_lw(w : float,
 
    return population(ws, T2s, M_0, phis)
 
-def corrupted_snr():
-   pass
+def corrupted_snr(signal : np.ndarray,
+                  center : float, 
+                  sigma : float,  
+                  a : float = 1.0,
+                  offset : float = 0.0, 
+                  add_sig : bool = True,
+                  bitgenerator : np.random.BitGenerator = np.random.MT19937()):
+   """Returns the given signal with a normal (gaussian) white noise addition of given parameters.
+   
+   Parameters
+   ----------
+   signal : np.ndarray
+    Original signal to be corrupted.
+   center : float
+    White noise center.
+   sigma : float
+    Standard deviation of the noise.
+   a : float, optional
+    Amplitude of the white noise. Default is 1.0
+   offset : float, optional
+    White noise offset, default is 0.0.
+   add_sig : bool, optional
+    Original signal addition condition. Default is ``True``, so signal will be added.
+   bitgenerator : np.random.BitGenerator, optional
+    Numpy bitgenerator for the given noise generation. Default is MT19937."""
+   gen = np.random.Generator(bitgenerator)
+   n = signal.size
+   return signal*add_sig + a*gen.normal(center, sigma, n) + offset
+   
     
 def max_frequency(dt : float):
   """Returns the maximum frequency, in Hz that can be captured 
