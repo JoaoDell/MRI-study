@@ -332,14 +332,16 @@ def plot_chem_shifts(freqs : np.ndarray,
                      percentage : float, 
                      title : str = "Simulated MRS Spectra", 
                      xlabel : str = "δ (p.p.m.)",
-                     ylabel : str = "Intensity (A.U.)"): 
+                     ylabel : str = "Intensity (A.U.)",
+                     c : str = "deeppink",
+                     label : str = None): 
    plot_freqs = freqs[freqs.size//2 + 1:] # +1 excludes de 0 frequency
    plot_sig_fft = sig_fft[sig_fft.size//2 + 1:]
  
    b = plot_freqs.size//2
    b = int(percentage*b)
  
-   plt.plot(plot_freqs[:b], plot_sig_fft.real[:b], c = "deeppink")
+   plt.plot(plot_freqs[:b], plot_sig_fft.real[:b], c = c, label = label)
    plt.title(title)
    plt.xlabel(xlabel)
    plt.ylabel(ylabel)
