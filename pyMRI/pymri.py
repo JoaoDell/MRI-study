@@ -148,7 +148,7 @@ def population_transverse_decay(t0 : float,
     Dt = ts[k + 1] - t0
     theta = w*Dt
 
-    S0 = np.sum(np.array([single_transverse_decay(t, T2[i], M_0, w[i], acc_phi[i]).real for i in range(n)]), axis = 0)
+    S0 = np.sum(np.array([single_transverse_decay(t, T2[i], M_0, w[i], acc_phi[i]) for i in range(n)]), axis = 0)
     
     if ts[k + 1] != tn:
       acc_phi += - 2*(theta + acc_phi)
@@ -185,34 +185,35 @@ def corrupted_lw(T2 : np.ndarray,
    T2s = s*T2
    return population(ws, T2s, M_0, phis)
 
-def snr(signal : np.ndarray):
+def snr(signal : np.ndarray, percent : float = 0.1, plot : bool = False):
    """Calculates the signal-to-noise ratio of a given signal. 
       The SNR is calculated as the ratio of two values:
-      1. The mean value of the signal at its center, denoted by S.
-      2. The average standard deviation of two regions in the corners 
-      of the signal, denoted by N.
-
-      The output is ray*S/N, with ray being the rayleigh correction, a factor of ~0.66
-
+      1. The maximum value of the signal, denoted by S.
+      2. The standard deviation of the signal at its farthest from the origin region.
       
       Parameters
       ----------
 
       signal : np.ndarray
         Signal to have the SNR calculated.
+      percent : float
+        The percentage of the signal size 
+        that defines the size of the interval 
+        from its end that will have the standard deviation calculated.
       """
-   n = signal.size
-   center = n//2
-   r = int(n/6.0)
-   d = int(n/10.0)
-
-   mag = np.abs(signal)
-
-   S = np.mean(mag[center - r : center + r])
-   N = np.mean([np.std(mag[:d]), np.std(mag[ n - d:])])
-   ray =  0.655136378  
+   assert 0.01 <= percent <= 1.0, "Percent must be in the interval [0.01, 1.0]"
    
-   return ray*S/N
+   n = signal.size
+   r = int(percent*n)
+
+   S = np.nanmax(np.abs(signal))
+   N = np.std(signal[n - r:n])
+
+   if plot == True:
+      x = np.arange(n - r, n, 1.0)
+      plt.plot(x, signal[n - r:n])
+   
+   return S/N 
 
 def corrupted_snr(signal : np.ndarray,
                   center : float, 
@@ -345,6 +346,7 @@ def plot_chem_shifts(freqs : np.ndarray,
    plt.title(title)
    plt.xlabel(xlabel)
    plt.ylabel(ylabel)
-   plt.gca().invert_xaxis() #inverts the x axis
-   plt.grid()
+   if plt.gca().xaxis_inverted() == False:
+    plt.gca().invert_xaxis() #inverts the x axis
+   plt.grid(True)
   
