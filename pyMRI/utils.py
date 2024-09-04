@@ -160,7 +160,10 @@ def RMSE(img1, img2):
     First image to be compared.
   img2 : np.ndarray
     Second image to be compared."""
-  return np.sqrt((np.sum((img1 - img2)**2))/(float(img1.shape[0]*img1.shape[1])))
+  if len(img1.shape) > 1:
+    return np.sqrt((np.sum((img1 - img2)**2))/(float(img1.shape[0]*img1.shape[1])))
+  else:
+     return np.sqrt((np.sum((img1 - img2)**2))/(float(img1.shape[0])))
 
 def gaussian_filter(size, epsilon):
     x_l, y_l = size

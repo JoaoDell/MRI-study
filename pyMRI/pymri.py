@@ -1,3 +1,4 @@
+import matplotlib.pyplot as plt
 import numpy as np
 from typing import Literal
 
@@ -19,14 +20,20 @@ T2_EXAMPLES = {'Substância Branca' : 90*1e-3,
                'Músculo' : 50*1e-3,
                'Lipídios (gordura)' : 80*1e-3}
 
-METABOLITES = {"glutamato"              : (3.7444,  89*1e-3), # (δ, T2) [ppm, s]
-               "glutamina"              : (3.7625, 116*1e-3),
-               "gaba"                   : (3.0082, 105*1e-3),
-               "myo-inositol"           : (3.5177, 148*1e-3),
-               "phosphorylethanolamine" : (3.9825,  96*1e-3),
-               "phosphocreatine"        : (3.0280, 113*1e-3),
-               "taurina"                : (3.4190,  93*1e-3),
-               "naa"                    : (2.0050, 202*1e-3)}
+METABOLITES = {"gaba"                   : (1.9346,   19.9*1e-3), # (δ, T2) [ppm, s]
+               "naa"                    : (2.0050,   73.5*1e-3),
+               "naag"                   : (2.1107,    6.6*1e-3),
+               "glx2"                   : (2.1157,   90.9*1e-3),
+               "gaba2"                  : (2.2797,   83.3*1e-3),
+               "glu"                    : (2.3547,  116.3*1e-3),
+               "cr"                     : (3.0360,   92.6*1e-3),
+               "cho"                    : (3.2200,  113.6*1e-3),
+               "m-ins3"                 : (3.2570,  105.3*1e-3),
+               "m-ins"                  : (3.5721,  147.1*1e-3),
+               "m-ins2"                 : (3.6461,  222.2*1e-3),
+               "glx"                    : (3.7862,   45.7*1e-3),
+               "cr2"                    : (3.9512,   40.0*1e-3),
+               "cho+m-ins"              : (4.1233,    8.8*1e-3)}
 
 def single_transverse_decay(t : np.ndarray, 
                             T2 : float,  
@@ -50,7 +57,9 @@ def single_transverse_decay(t : np.ndarray,
     """
     return M_0*np.exp( 1j*(w*t + phi) )*np.exp(-t/T2)
 
-def B_gradient(x : np.ndarray, G : float, type : Literal["constant", "linear", "quadratic"]):
+def B_gradient(x : np.ndarray, 
+               G : float, 
+               type : Literal["constant", "linear", "quadratic"]):
     """Generates a magnetic field gradient.
 
     Parameters
@@ -71,7 +80,11 @@ def B_gradient(x : np.ndarray, G : float, type : Literal["constant", "linear", "
     elif type == "constant":
         return G*np.ones_like(x)
     
-def generate_ws(B0 : float, pos : np.ndarray, G : float, gamma : float, gradient : Literal["constant", "linear", "quadratic"]):
+def generate_ws(B0 : float, 
+                pos : np.ndarray, 
+                G : float, 
+                gamma : float, 
+                gradient : Literal["constant", "linear", "quadratic"]):
   """Generates the precession frequencies for the population.
 
   Parameters
@@ -135,7 +148,7 @@ def population_transverse_decay(t0 : float,
     Dt = ts[k + 1] - t0
     theta = w*Dt
 
-    S0 = np.sum(np.array([single_transverse_decay(t, T2[i], M_0, w[i], acc_phi[i]).real for i in range(n)]), axis = 0)
+    S0 = np.sum(np.array([single_transverse_decay(t, T2[i], M_0, w[i], acc_phi[i]) for i in range(n)]), axis = 0)
     
     if ts[k + 1] != tn:
       acc_phi += - 2*(theta + acc_phi)
@@ -148,7 +161,90 @@ def population_transverse_decay(t0 : float,
     return S, np.arange(t0, tn, dt)
   else:
     return S, np.arange(t0, tn, dt), acc_phi
+  
+def corrupted_lw(T2 : np.ndarray,
+                 s : float,
+                 ws : float, 
+                 M_0: float,
+                 phis : float):
+   """Returns a population with a range of T2s for linewidth (LW) broadening.
     
+      Parameters
+      ----------
+      T2 : np.ndarray                                               
+        Decaying time T2.                                      [s]
+      s : float (0.0, +inf]
+        Scalling constant for T2s.
+      ws : float
+        Angular frequencies of the population.           [rad/s]       
+      M_0 : float        
+        Initial magnetization value.                           [T]
+      phis : float        
+        Initial phase.                                         [rad]
+        """
+   T2s = s*T2
+   return population(ws, T2s, M_0, phis)
+
+def snr(signal : np.ndarray, percent : float = 0.1, plot : bool = False):
+   """Calculates the signal-to-noise ratio of a given signal. 
+      The SNR is calculated as the ratio of two values:
+      1. The maximum value of the signal, denoted by S.
+      2. The standard deviation of the signal at its farthest from the origin region.
+      
+      Parameters
+      ----------
+
+      signal : np.ndarray
+        Signal to have the SNR calculated.
+      percent : float
+        The percentage of the signal size 
+        that defines the size of the interval 
+        from its end that will have the standard deviation calculated.
+      """
+   assert 0.01 <= percent <= 1.0, "Percent must be in the interval [0.01, 1.0]"
+   
+   n = signal.size
+   r = int(percent*n)
+
+   S = np.nanmax(np.abs(signal))
+   N = np.std(signal[n - r:n])
+
+   if plot == True:
+      x = np.arange(n - r, n, 1.0)
+      plt.plot(x, signal[n - r:n])
+   
+   return S/N 
+
+def corrupted_snr(signal : np.ndarray,
+                  center : float, 
+                  sigma : float,  
+                  a : float = 1.0,
+                  offset : float = 0.0, 
+                  add_sig : bool = True,
+                  bitgenerator : np.random.BitGenerator = np.random.MT19937()):
+   """Returns the given signal with a normal (gaussian) white noise addition of given parameters.
+   
+   Parameters
+   ----------
+   signal : np.ndarray
+    Original signal to be corrupted.
+   center : float
+    White noise center.
+   sigma : float
+    Standard deviation of the noise.
+   a : float, optional
+    Amplitude of the white noise. Default is 1.0
+   offset : float, optional
+    White noise offset, default is 0.0.
+   add_sig : bool, optional
+    Original signal addition condition. Default is ``True``, so signal will be added.
+   bitgenerator : np.random.BitGenerator, optional
+    Numpy bitgenerator for the given noise generation. Default is MT19937."""
+   gen = np.random.Generator(bitgenerator)
+   n = signal.size
+   noise = gen.normal(center, sigma, n) + 1j*gen.normal(center, sigma, n)
+   return signal*add_sig + a*noise + offset
+   
 def max_frequency(dt : float):
   """Returns the maximum frequency, in Hz that can be captured 
   by the given sampling parameters, according to the Nyquist rate.
@@ -159,7 +255,10 @@ def max_frequency(dt : float):
     Time step of the simulation."""
   return (1.0/dt)/2.0
 
-def population(ws : float, T2s : np.ndarray, M_0 : float, phi : np.ndarray):
+def population(ws : float, 
+               T2s : np.ndarray, 
+               M_0 : float, 
+               phi : np.ndarray):
   """Returns a tuple with the population ordered parameters.
    
   Parameters
@@ -175,7 +274,9 @@ def population(ws : float, T2s : np.ndarray, M_0 : float, phi : np.ndarray):
   """
   return (ws, T2s, M_0, phi)
 
-def event(t : float, echo : bool, ws : np.ndarray):
+def event(t : float, 
+          echo : bool, 
+          ws : np.ndarray):
   """Returns a tuple with the ordered information of the event.
   
   Parameters
@@ -188,25 +289,11 @@ def event(t : float, echo : bool, ws : np.ndarray):
     Frequencies of the spin population."""
   return (t, echo,  ws)
 
-def f_from_chem_shift(delta : float, B0 : float):
-    """Returns de frequency in MHz (Megacycles/s) of a given compound 
-    based on its chemical shift and magnetic field B0.
-    
-    Parameters
-    ----------
-    
-    delta : float                       [ppm]
-        Chemical shift value, in ppm.
-    B0 : float                          [T]
-        Magnetic field B0, in T."""
-    gamma = 42.58
-    f_ref = gamma*B0
-    return f_ref*(delta*1e-6 + 1.0)
-
 hz_to_rad = lambda f : 2*np.pi*f # Converts hz to radians/s
 rad_to_hz = lambda w : w/(2*np.pi) # Converts radians/s to hz
 
-def f_from_chem_shift(delta : float, B0 : float):
+def f_from_chem_shift(delta : float, 
+                      B0 : float):
     """Returns the frequency in MHz (Megacycles/s) of a given compound 
     based on its chemical shift and magnetic field B0. It uses tetramethylsilane as reference.
     
@@ -221,7 +308,8 @@ def f_from_chem_shift(delta : float, B0 : float):
     f_ref = gamma*B0
     return f_ref*(delta + 1.0)
 
-def chem_shift_from_f(f : float, B0 : float):
+def chem_shift_from_f(f : float, 
+                      B0 : float):
     """Returns the chemical shift in ppm (parts per million) of a given compound 
     based on its frequency and magnetic field B0. It uses tetramethylsilane as reference.
     
@@ -236,5 +324,29 @@ def chem_shift_from_f(f : float, B0 : float):
     f_ref =  gamma*B0
     return (f - f_ref)/f_ref
 
-def check_frequency(w : float, dt : float):
+def check_frequency(w : float, 
+                    dt : float):
   return np.all(rad_to_hz(w) <= max_frequency(dt))
+
+def plot_chem_shifts(freqs : np.ndarray, 
+                     sig_fft : np.ndarray, 
+                     percentage : float, 
+                     title : str = "Simulated MRS Spectra", 
+                     xlabel : str = "δ (p.p.m.)",
+                     ylabel : str = "Intensity (A.U.)",
+                     c : str = "deeppink",
+                     label : str = None): 
+   plot_freqs = freqs[freqs.size//2 + 1:] # +1 excludes de 0 frequency
+   plot_sig_fft = sig_fft[sig_fft.size//2 + 1:]
+ 
+   b = plot_freqs.size//2
+   b = int(percentage*b)
+ 
+   plt.plot(plot_freqs[:b], plot_sig_fft.real[:b], c = c, label = label)
+   plt.title(title)
+   plt.xlabel(xlabel)
+   plt.ylabel(ylabel)
+   if plt.gca().xaxis_inverted() == False:
+    plt.gca().invert_xaxis() #inverts the x axis
+   plt.grid(True)
+  
