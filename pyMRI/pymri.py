@@ -20,20 +20,20 @@ T2_EXAMPLES = {'Substância Branca' : 90*1e-3,
                'Músculo' : 50*1e-3,
                'Lipídios (gordura)' : 80*1e-3}
 
-METABOLITES = {"gaba"                   : (1.9346,   19.9*1e-3), # (δ, T2) [ppm, s]
-               "naa"                    : (2.0050,   73.5*1e-3),
-               "naag"                   : (2.1107,    6.6*1e-3),
-               "glx2"                   : (2.1157,   90.9*1e-3),
-               "gaba2"                  : (2.2797,   83.3*1e-3),
-               "glu"                    : (2.3547,  116.3*1e-3),
-               "cr"                     : (3.0360,   92.6*1e-3),
-               "cho"                    : (3.2200,  113.6*1e-3),
-               "m-ins3"                 : (3.2570,  105.3*1e-3),
-               "m-ins"                  : (3.5721,  147.1*1e-3),
-               "m-ins2"                 : (3.6461,  222.2*1e-3),
-               "glx"                    : (3.7862,   45.7*1e-3),
-               "cr2"                    : (3.9512,   40.0*1e-3),
-               "cho+m-ins"              : (4.1233,    8.8*1e-3)}
+METABOLITES = {"gaba"                   : (1.9346,   19.9*1e-3, 0.2917), # (δ, T2) [ppm, s]
+               "naa"                    : (2.0050,   73.5*1e-3, 0.4289),
+               "naag"                   : (2.1107,    6.6*1e-3, 0.0290),
+               "glx2"                   : (2.1157,   90.9*1e-3, 0.0184),
+               "gaba2"                  : (2.2797,   83.3*1e-3, 0.0451),
+               "glu"                    : (2.3547,  116.3*1e-3, 0.0427),
+               "cr"                     : (3.0360,   92.6*1e-3, 0.2026),
+               "cho"                    : (3.2200,  113.6*1e-3, 0.0776),
+               "m-ins3"                 : (3.2570,  105.3*1e-3, 0.0202),
+               "m-ins"                  : (3.5721,  147.1*1e-3, 0.0411),
+               "m-ins2"                 : (3.6461,  222.2*1e-3, 0.0150),
+               "glx"                    : (3.7862,   45.7*1e-3, 0.1054),
+               "cr2"                    : (3.9512,   40.0*1e-3, 0.2991),
+               "cho+m-ins"              : (4.1233,    8.8*1e-3, 0.8244)}
 
 def single_transverse_decay(t : np.ndarray, 
                             T2 : float,  
@@ -148,7 +148,7 @@ def population_transverse_decay(t0 : float,
     Dt = ts[k + 1] - t0
     theta = w*Dt
 
-    S0 = np.sum(np.array([single_transverse_decay(t, T2[i], M_0, w[i], acc_phi[i]) for i in range(n)]), axis = 0)
+    S0 = np.sum(np.array([single_transverse_decay(t, T2[i], M_0[i], w[i], acc_phi[i]) for i in range(n)]), axis = 0)
     
     if ts[k + 1] != tn:
       acc_phi += - 2*(theta + acc_phi)
