@@ -20,7 +20,7 @@ T2_EXAMPLES = {'Substância Branca' : 90*1e-3,
                'Músculo' : 50*1e-3,
                'Lipídios (gordura)' : 80*1e-3}
 
-METABOLITES = {"gaba"                   : (1.9346,   19.9*1e-3, 0.2917), # (δ, T2) [ppm, s]
+METABOLITES = {"gaba"                   : (1.9346,   19.9*1e-3, 0.2917), # (δ, T2, A) [ppm, s, T]
                "naa"                    : (2.0050,   73.5*1e-3, 0.4289),
                "naag"                   : (2.1107,    6.6*1e-3, 0.0290),
                "glx2"                   : (2.1157,   90.9*1e-3, 0.0184),
