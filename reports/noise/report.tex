@@ -9,7 +9,8 @@
 
 
 %Parameters for titles
-\title{Projeto A: Sistema de Partículas}
+\title{ Simulação de Sinais Cerebrais de Espectroscopia por 
+Ressonância Magnética: Da Criação à Corrupção (Por Ruído)}
 \author{João Victor Dell Agli Floriano}
 \date{08/10/2024}
 
@@ -21,36 +22,24 @@
 \maketitle
 
 \section{Resumo}
-
-Apesar de o formalismo de Fourier ter representado uma importante revolução na área de processamento de sinais, 
-sendo uma das bases fundamentais de Ressonância Magnética Nuclear, ele apresenta limitações de identificação de 
-sinais específicos em espectros com alto grau de superposição de picos. Nesse contexto, o Matrix Pencil Method (MPM) 
-foi apresentado como uma alternativa de pós-processamento, visto que sua aplicação permite uma melhor separação das 
-componentes de interesse do sinal.(1) Entretanto, o método ainda carece de limites bem definidos, particularmente no 
-que se refere à aplicabilidade específica aos dados de Espectroscopia por Ressonância Magnética (MRS), nos quais o 
-nível de ruído pode ser um desafio extra. Assim, o presente trabalho tem como objetivo central a implementação e 
-utilização do MPM para processamento dos dados de MRS, bem como a avaliação de sua acurácia e eficiência. Para isso, 
-foram implementadas rotinas para simulação de sinais sintéticos de MRS cerebral. Essa implementação foi realizada 
-a partir de uma base de dados de metabólitos, compostos químicos encontrados no cérebro humano. (2) Esse sinal temporal 
-complexo foi corrompido por alguns fatores que reconhecidamente influenciam na legibilidade do sinal.(3), sendo elas ruído, 
-aqui gerado artificialmente, alargamento dos picos espectrais, através da alteração dos tempos de relaxação efetivos, 
-e manutenção do sinal residual da água. O ruído foi gerado utilizando valores gerados aleatoriamente a partir de uma 
-distribuição de probabilidade gaussiana. Cada uma das componentes de ruído é adicionada à uma componente do sinal complexo e, 
-então, o sinal de magnitude é calculado. O espectro de MRS é, então, obtido a partir da Transformada de Fourier (FT) do 
-sinal e, pode, então, ser analisado. Um estudo inicial está sendo realizado de maneira a caracterizar a relação entre a 
-relação sinal ruído (SNR) do espectro simulado e o desvio padrão (SD) da distribuição geradora do ruído no sinal temporal. 
-Os primeiros resultados sugerem uma relação aproximadamente linear para valores mais baixos de ruído e uma saturação 
-para valores mais altos. Os limites destes comportamentos, bem como sua caracterização para diferentes condições do sinal 
-simulado, ainda estão sendo completamente caracterizados. A partir de então, pretende-se, com este sinal sintético corrompido, 
-estudar como se comporta o MPM sob diferentes níveis de corrupção, com o objetivo de delimitar melhor a eficiência 
-deste algoritmo na obtenção dos espectros de interesse. Em seguida, pretende-se enfim testar o algoritmo em sinais in vivo 
-de espectroscopia, usando os resultados obtidos na etapa anterior como base para uma discussão mais qualificada dos resultados.
-
+Apesar de o formalismo de Fourier ter representado uma importante revolução na área de processamento 
+de sinais, ele apresenta limitações de identificação de sinais específicos em espectros com alto grau 
+de superposição de picos. Nesse contexto, o Matrix Pencil Method (MPM) foi apresentado como uma 
+alternativa de pós-processamento, visto que sua aplicação permite uma melhor separação das componentes 
+de interesse do sinal.  Entretanto, o método ainda carece de limites bem definidos, particularmente no 
+que se refere à aplicabilidade específica aos dados de Espectroscopia por Ressonância Magnética (MRS), 
+nos quais o nível de ruído pode ser um desafio extra. Com o objetivo de investigar tais limites, foram 
+implementadas rotinas para simulação de sinais sintéticos de MRS cerebral. Esses sinais foram então 
+corrompidos com ruído de distribuição gaussiana, possibilitando o estudo de como diferentes valores de 
+desvio padrão se comportavam nas várias etapas do processo de análise dos mesmos. Os primeiros resultados 
+sugerem uma relação aproximadamente linear para valores mais baixos de ruído e uma saturação para valores 
+mais altos. Os limites destes comportamentos, bem como sua caracterização para diferentes condições do sinal 
+simulado, ainda estão sendo completamente caracterizados.
 \section{Introdução}
 
 \begin{enumerate}
-    \item Falar sobre a importância de se ter um ambiente controlado para o objetivo final do trabalho.
-    \item 
+    \item Falar do objetivo a curto e longo prazo do presente trabalho.
+    \item Falar sobre a importância de se ter um ambiente controlado para o objetivo final do trabalho. 
 \end{enumerate}
 
 \section{Métodos}
@@ -69,7 +58,10 @@ descrita em \ref{eq:1}.
     M(t) = M_0 e^{i(\omega t + \phi)} e^{\frac{-t}{T_2}}
 \end{equation}
 
-Essa equação descreve o valor da magnetização da parte da amostra, medida em Tesla (T)
+Essa equação descreve a evolução da magnetização da parte da amostra medida ao longo do tempo, em Tesla (T). 
+Apesar de ter o tempo $t$ como variável principal, ela também depende de mais alguns parâmetros para 
+funcionar: $\omega$, que descreve a frequência oscilação do sinal; $\phi$, que define a fase inicial do 
+sinal; $T_2$, que define o tempo de decaimento da magnetização transversal. 
 
 \begin{equation} \label{eq:2}
     SNR = \frac{P}{\sigma}
