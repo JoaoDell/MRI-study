@@ -1,0 +1,126 @@
+%start by defining the document class
+\documentclass{article} 
+
+%below the package used for hyperlinking
+\usepackage{graphicx}
+\usepackage[brazil]{babel}
+\usepackage{float}
+\graphicspath{ {./images/} }
+
+
+%Parameters for titles
+\title{Projeto A: Sistema de Partículas}
+\author{João Victor Dell Agli Floriano}
+\date{08/10/2024}
+
+
+%beggining of doc
+\begin{document}
+
+%inserting the title defined above
+\maketitle
+
+\section{Resumo}
+
+Apesar de o formalismo de Fourier ter representado uma importante revolução na área de processamento de sinais, 
+sendo uma das bases fundamentais de Ressonância Magnética Nuclear, ele apresenta limitações de identificação de 
+sinais específicos em espectros com alto grau de superposição de picos. Nesse contexto, o Matrix Pencil Method (MPM) 
+foi apresentado como uma alternativa de pós-processamento, visto que sua aplicação permite uma melhor separação das 
+componentes de interesse do sinal.(1) Entretanto, o método ainda carece de limites bem definidos, particularmente no 
+que se refere à aplicabilidade específica aos dados de Espectroscopia por Ressonância Magnética (MRS), nos quais o 
+nível de ruído pode ser um desafio extra. Assim, o presente trabalho tem como objetivo central a implementação e 
+utilização do MPM para processamento dos dados de MRS, bem como a avaliação de sua acurácia e eficiência. Para isso, 
+foram implementadas rotinas para simulação de sinais sintéticos de MRS cerebral. Essa implementação foi realizada 
+a partir de uma base de dados de metabólitos, compostos químicos encontrados no cérebro humano. (2) Esse sinal temporal 
+complexo foi corrompido por alguns fatores que reconhecidamente influenciam na legibilidade do sinal.(3), sendo elas ruído, 
+aqui gerado artificialmente, alargamento dos picos espectrais, através da alteração dos tempos de relaxação efetivos, 
+e manutenção do sinal residual da água. O ruído foi gerado utilizando valores gerados aleatoriamente a partir de uma 
+distribuição de probabilidade gaussiana. Cada uma das componentes de ruído é adicionada à uma componente do sinal complexo e, 
+então, o sinal de magnitude é calculado. O espectro de MRS é, então, obtido a partir da Transformada de Fourier (FT) do 
+sinal e, pode, então, ser analisado. Um estudo inicial está sendo realizado de maneira a caracterizar a relação entre a 
+relação sinal ruído (SNR) do espectro simulado e o desvio padrão (SD) da distribuição geradora do ruído no sinal temporal. 
+Os primeiros resultados sugerem uma relação aproximadamente linear para valores mais baixos de ruído e uma saturação 
+para valores mais altos. Os limites destes comportamentos, bem como sua caracterização para diferentes condições do sinal 
+simulado, ainda estão sendo completamente caracterizados. A partir de então, pretende-se, com este sinal sintético corrompido, 
+estudar como se comporta o MPM sob diferentes níveis de corrupção, com o objetivo de delimitar melhor a eficiência 
+deste algoritmo na obtenção dos espectros de interesse. Em seguida, pretende-se enfim testar o algoritmo em sinais in vivo 
+de espectroscopia, usando os resultados obtidos na etapa anterior como base para uma discussão mais qualificada dos resultados.
+
+\section{Introdução}
+
+\begin{enumerate}
+    \item Falar sobre a importância de se ter um ambiente controlado para o objetivo final do trabalho.
+    \item 
+\end{enumerate}
+
+\section{Métodos}
+
+Para atingir o objetivo final de avaliação do MPM em sinais cerebrais de MRS, algumas etapas foram 
+necessárias para que as condições ideais de testagem fossem estabelecidas. Para que esse algoritmo 
+seja devidamente avaliado, é necessário primeiro garantir um quantidade suficiente de sinais de 
+MRS das mais variadas condições para que uma análise estatística adequada seja feita. 
+
+Tendo esse objetivo como base, a primeira etapa do projeto foi a criação de um ambiente de simulação
+que tivesse a capacidade de lidar com as demandas do projeto. A simulação, escrita em uma biblioteca 
+própria customizada de python, parte da equação básica de modelagem de um sinal de ressonância magnética, 
+descrita em \ref{eq:1}.
+
+\begin{equation} \label{eq:1}
+    M(t) = M_0 e^{i(\omega t + \phi)} e^{\frac{-t}{T_2}}
+\end{equation}
+
+Essa equação descreve o valor da magnetização da parte da amostra, medida em Tesla (T)
+
+\begin{equation} \label{eq:2}
+    SNR = \frac{P}{\sigma}
+\end{equation}
+
+\begin{equation} \label{eq:3}
+    f(x) = \frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x - \mu)^2}{2\sigma ^2}}
+\end{equation}
+
+Usando o Tetrametilsilano (TMS) como referência para os desvios químicos.
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|c|c|c|}
+    \hline
+    Metabolite & $\delta$ (ppm) & $T_2$ (s) & Amplitude (U.A.) \\
+    \hline
+    gaba & 1.9346 & 1.9900e-02 & 0.2917 \\
+    naa & 2.0050 & 7.3500e-02 & 0.4289 \\
+    naag & 2.1107 & 6.6000e-03 & 0.0290 \\
+    glx2 & 2.1157 & 9.0900e-02 & 0.0184 \\
+    gaba2 & 2.2797 & 8.3300e-02 & 0.0451 \\
+    glu & 2.3547 & 1.1630e-01 & 0.0427 \\
+    cr & 3.0360 & 9.2600e-02 & 0.2026 \\
+    cho & 3.2200 & 1.1360e-01 & 0.0776 \\
+    m-ins3 & 3.2570 & 1.0530e-01 & 0.0202 \\
+    m-ins & 3.5721 & 1.4710e-01 & 0.0411 \\
+    m-ins2 & 3.6461 & 2.2220e-01 & 0.0150 \\
+    glx & 3.7862 & 4.5700e-02 & 0.1054 \\
+    cr2 & 3.9512 & 4.0000e-02 & 0.2991 \\
+    cho+m-ins & 4.1233 & 8.8000e-03 & 0.8244 \\
+    \hline
+    \end{tabular}
+    \caption{Informações dos metabólitos}
+\end{table}
+
+\section{Resultados e Discussão}
+
+\section{Conclusão}
+
+A partir do estudo da relação entre desvios padrão e o SNR resultante, 
+foi verificada uma relação linear para valores baixos de sigma, e uma 
+saturação para valores mais altos. Também foram calculados 
+parâmetros de ajuste dos dados, com os quais foi feita a correção dos 
+valores de SNR de entrada, viabilizando a dedução de uma função que 
+relacionasse diretamente sigma e SNR com uma margem de erro 
+relativamente baixa para as intenções do projeto.
+
+
+%nding the document
+\end{document}
+
+%to compile, use pdflatex [name of the file].tex or use the compiler of vscode
