@@ -331,9 +331,9 @@ def check_frequency(w : float,
 def plot_chem_shifts(freqs : np.ndarray, 
                      sig_fft : np.ndarray, 
                      percentage : float, 
-                     title : str = "Simulated MRS Spectra", 
+                     title : str = "Espectro de MRS simulado", 
                      xlabel : str = "δ (p.p.m.)",
-                     ylabel : str = "Intensity (A.U.)",
+                     ylabel : str = "Intensidade (U.A)",
                      c : str = "deeppink",
                      label : str = None): 
    plot_freqs = freqs[freqs.size//2 + 1:] # +1 excludes de 0 frequency
