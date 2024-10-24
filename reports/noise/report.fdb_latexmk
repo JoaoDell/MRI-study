@@ -1,6 +1,14 @@
 # Fdb version 4
-["pdflatex"] 1729715128.04361 "c:/Users/Lampada/Desktop/Mestrado/MRI-study/reports/noise/report.tex" "report.pdf" "report" 1729715129.03244 0
-  "c:/Users/Lampada/Desktop/Mestrado/MRI-study/reports/noise/report.tex" 1729715127 5254 3f6cd1dc95dd198ab20547831a1a6256 ""
+["bibtex report"] 1729799577.26845 "report.aux" "report.bbl" "report" 1729799730.6038 0
+  "./refs.bib" 1729799387 757 d418126a2273e95e5d7a71f6d7b4dfb1 ""
+  "c:/texlive/2024/texmf-dist/bibtex/bst/base/plain.bst" 1710783258 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
+  "report.aux" 1729799729 1676 6d96787c933096b194c7348e5d1df373 "pdflatex"
+  (generated)
+  "report.bbl"
+  "report.blg"
+  (rewritten before read)
+["pdflatex"] 1729799728.37231 "c:/Users/Lampada/Desktop/Mestrado/MRI-study/reports/noise/report.tex" "report.pdf" "report" 1729799730.60451 0
+  "c:/Users/Lampada/Desktop/Mestrado/MRI-study/reports/noise/report.tex" 1729799727 8622 5e8f5052becd429526d76e5a309ff556 ""
   "c:/texlive/2024/texmf-dist/fonts/map/fontname/texfonts.map" 1710784053 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "c:/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1710783457 1324 c910af8c371558dc20f2d7822f66fe64 ""
   "c:/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1710783457 1524 4414a8315f39513458b80dfc63bff03a ""
@@ -13,6 +21,7 @@
   "c:/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm" 1710783457 1124 6c73e740cf17375f03eec0ee63599741 ""
   "c:/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm" 1710783457 1116 933a60c408fc0a863a92debe84b2d294 ""
   "c:/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1710783457 1120 8b7d695260f3cff42e636090a8002094 ""
+  "c:/texlive/2024/texmf-dist/fonts/tfm/public/cm/cmti10.tfm" 1710783457 1480 aa8e34af0eb6a2941b776984cf1dfdc4 ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb" 1710783003 32080 340ef9bf63678554ee606688e7b5339d ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1710783003 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb" 1710783003 37912 07513ec114ac737ab54cea0152f4424b ""
@@ -25,6 +34,7 @@
   "c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1710783003 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb" 1710783003 32915 7bf7720c61a5b3a7ff25b0964421c9b6 ""
   "c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb" 1710783003 32716 08e384dc442464e7285e891af9f45947 ""
+  "c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb" 1710783003 37944 359e864bd06cde3b1cf57bb20757fb06 ""
   "c:/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii" 1710785027 71627 94eb9990bed73c364d7f53f960cc8c5b ""
   "c:/texlive/2024/texmf-dist/tex/generic/babel-portuges/brazil.ldf" 1710783131 6591 308dec8ccec5a8d302be8a046d473dd3 ""
   "c:/texlive/2024/texmf-dist/tex/generic/babel/babel.sty" 1710783102 146276 10a40dabec03ce18494af0c3a51bcbdc ""
@@ -45,8 +55,11 @@
   "c:/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1710786678 5519564 8e03ea51a1f7a9f5f48690c3102141d1 ""
   "c:/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt" 1710786868 8222552 5217f0dee8149076c15478aa322bc842 ""
   "c:/texlive/2024/texmf.cnf" 1710786649 713 e69b156964470283e0530f5060668171 ""
-  "report.aux" 1729715128 852 dc6e163691d091b8ef3d4d936245089a "pdflatex"
-  "report.tex" 1729715127 5254 3f6cd1dc95dd198ab20547831a1a6256 ""
+  "images/gradient.png" 1729798239 65987 3e5740b4732d65bb20a1d22609ebf6df ""
+  "images/spin-echo.png" 1729795548 107935 93b7d36adec2f62524287e2909742b42 ""
+  "report.aux" 1729799729 1676 6d96787c933096b194c7348e5d1df373 "pdflatex"
+  "report.bbl" 1729799577 394 9b49506cb65d417284f9511f57f6a4aa "bibtex report"
+  "report.tex" 1729799727 8622 5e8f5052becd429526d76e5a309ff556 ""
   (generated)
   "report.aux"
   "report.log"

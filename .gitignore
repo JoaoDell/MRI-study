@@ -6,7 +6,6 @@ articles/
 __pycache__/
 *.pyc
 
-
 #LATEX
 ## Core latex/pdflatex auxiliary files:
 *.aux
