@@ -44,14 +44,14 @@ simulado, ainda estão sendo completamente caracterizados.
 
 \section{Métodos}
 
-Para atingir o objetivo final de avaliação do MPM em sinais cerebrais de MRS, algumas etapas foram 
+A fim de atingir o objetivo final de avaliação do MPM em sinais cerebrais de MRS, algumas etapas foram 
 necessárias para que as condições ideais de testagem fossem estabelecidas. Para que esse algoritmo 
 seja devidamente avaliado, é necessário primeiro garantir um quantidade suficiente de sinais de 
 MRS das mais variadas condições para que uma análise estatística adequada seja feita. 
 
 \subsection{Simulação}
 
-Tendo esse objetivo como base, a primeira etapa do projeto foi a criação de um ambiente de simulação
+Partindo desse objetivo, a primeira etapa do projeto foi a criação de um ambiente de simulação
 que tivesse a capacidade de lidar com as demandas do projeto. A simulação, escrita em uma biblioteca 
 própria customizada de python, parte da equação básica de modelagem de um sinal de ressonância magnética.
 
@@ -106,45 +106,99 @@ uma inversão real.
 Com o estabelecimento dos instrumentos necessários para a simulação de sinais de MRS, foi possível então prosseguir para a próxima etapa:
 a simulação de sinais cerebrais de MRS.
 
-Usando o Tetrametilsilano (TMS) como referência para os desvios químicos, foram organizados, a partir do trabalho de Danilo Mendes \cite{Silva2020-io} 
-os parâmetros de desvio químico ($\delta$), tempo de relaxação transversal ($T_2$) e amplitude de alguns metabólitos comumente encontrados no cérebro.
+O procedimento de Espectroscopia por Ressonância Magnética (MRS), apesar de compartilhar dos mesmos procedimentos do MRI, possui objetivos 
+diferentes. Enquanto o MRI se preocupa com uma imagem anatômica, ou seja, uma malha de voxels, a MRS se preocupa com a informação contida em apenas um voxel ou grupo 
+reduzido de voxels, denominados voxel-of-interest (VOI). O sinal obtido no VOI é analisado suprimindo os efeitos de lipídeos e água, restando 
+apenas os sinais de ordem menor, relativos à ruído e a, principalmente, metabólitos. Metabólitos são moléculas orgânicas de forma e composição 
+variadas, sendo essenciais em processos celulares. Por, em sua maioria, possuírem átomos de hidrogênio, os mesmos respondem ao sinal de excitação 
+de ressonância, fornecendo uma resposta próxima ao sinal esperado, diferindo entre si por uma pequena diferença. Essa diferença, denominada deslocamento químico, 
+é causada por efeitos eletrônicos de sua vizinhança química, e é representado na literatura pelo símbolo $\delta$. Seu valor é calculado de maneira 
+relativa, dado pela equação \ref{eq:4}, usando o valor de um composto, usualmente o Tetrametilsilano (TMS) \cite{}, como referência.
 
-\begin{table}[H]
+\begin{equation} \label{eq:4}
+    \delta = \frac{\nu _{amostra} - \nu _{ref}}{\nu _{ref}}
+\end{equation}
+
+
+Foram organizados na tabela \ref{table:1}, a partir do trabalho de Danilo Mendes \cite{Silva2020-io}, os parâmetros de desvio químico ($\delta$), tempo de relaxação 
+transversal ($T_2$) e amplitude de alguns metabólitos comumente encontrados no cérebro, sob regime de 3T. Esses valores são então usados como entrada na simulação
+previamente discutida, para a geração de sinais cerebrais. 
+
+\begin{table}[H] 
     \centering
     \begin{tabular}{|l|c|c|c|}
     \hline
     Metabólito & $\delta$ (ppm) & $T_2$ (s) & Amplitude (U.A.) \\
     \hline
-    gaba & 1.9346 & 0.0199 & 0.2917 \\
-    naa & 2.0050 & 0.0735 & 0.4289 \\
-    naag & 2.1107 & 0.0066 & 0.0290 \\
-    glx2 & 2.1157 & 0.0909 & 0.0184 \\
-    gaba2 & 2.2797 & 0.0833 & 0.0451 \\
-    glu & 2.3547 & 0.1163 & 0.0427 \\
-    cr & 3.0360 & 0.0926 & 0.2026 \\
-    cho & 3.2200 & 0.1136 & 0.0776 \\
-    m-ins3 & 3.2570 & 0.1053 & 0.0202 \\
-    m-ins & 3.5721 & 0.1471 & 0.0411 \\
-    m-ins2 & 3.6461 & 0.2222 & 0.0150 \\
-    glx & 3.7862 & 0.0457 & 0.1054 \\
-    cr2 & 3.9512 & 0.04 & 0.2991 \\
-    cho+m-ins & 4.1233 & 0.0088 & 0.8244 \\
+    GABA & 1.9346 & 0.0199 & 0.2917 \\
+    NAA & 2.0050 & 0.0735 & 0.4289 \\
+    NAAG & 2.1107 & 0.0066 & 0.0290 \\
+    Glx2 & 2.1157 & 0.0909 & 0.0184 \\
+    GABA2 & 2.2797 & 0.0833 & 0.0451 \\
+    Glu & 2.3547 & 0.1163 & 0.0427 \\
+    Cr & 3.0360 & 0.0926 & 0.2026 \\
+    Cho & 3.2200 & 0.1136 & 0.0776 \\
+    M-Ins3 & 3.2570 & 0.1053 & 0.0202 \\
+    M-Ins & 3.5721 & 0.1471 & 0.0411 \\
+    M-Ins2 & 3.6461 & 0.2222 & 0.0150 \\
+    Glx & 3.7862 & 0.0457 & 0.1054 \\
+    Cr2 & 3.9512 & 0.04 & 0.2991 \\
+    Cho+M-Ins & 4.1233 & 0.0088 & 0.8244 \\
     \hline
     \end{tabular}
     \caption{Informações dos metabólitos}
+    \label{table:1}
 \end{table}
 
 \subsection{Corrupção}
 
+Apesar de o programa dar conta de simular espectros corretamente a partir dos parâmetros dados, a realidade é que sinais clínicos \textit{in vivo} tem uma aparência significativamente 
+diferente da de um sinal gerado a partir do processo anteriormente descrito. 
 
+Os métodos de aquisição e conversão de sinais analógicos em digitais, embora avançados se comparados à décadas passadas, ainda são limitados em várias instâncias. Uma das principais 
+limitações ainda presentes é a captação de sinal ruidoso, o qual, a depender de sua intensidade, pode dificultar significativamente ou até impedir a análise do sinal desejado. A presença 
+inevitável de ruído no sinal é, inclusive, uma das principais limitações as quais o MPM pretende enfrentar, tornando sua presença essencial neste estudo. 
+
+\subsubsection{Geração}
+
+No caso da maioria dos sinais captados, o ruído tem como distribuição geradora uma função gaussiana, definida pela equação \ref{eq:3}. Nessa distribuição, $\mu$ representa seu valor central, 
+que no caso do ruído captado por aparelhos, tem valor nulo. O segundo parâmetro, $\sigma$, representa a largura do intervalo de variação dos valores gerados a partir dessa 
+distribuição, definido como sendo o valor adquirido na meia altura da curva, denominado desvio padrão.
+
+
+\begin{equation} \label{eq:3}
+    f(x) = \frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x - \mu)^2}{2\sigma ^2}}
+\end{equation}
+
+Essa distribuição, definida em um módulo de números aleatórios da biblioteca \textit{numpy}, foi usada para geração de um ruído complexo, de mesmo $\sigma$ na parte real e imaginária, que foi então adicionado ao sinal original, simulando assim sua
+corrupção.
+
+Para fins de controle adequado da corrupção do sinal, a Relação Sinal-Ruído (SNR) foi usada como métrica de sua qualidade. O cálculo da SNR não possui uma definição unificada, podendo variar significativamente a depender da área. Sendo assim, 
+escolheu-se a que seria mais conveniente para o contexto apresentado, atentando-se também a qual seria mais comum nos trabalhos de referência desse projeto. A definição a ser usada é a que 
+leva em consideração o pico do sinal e o desvio padrão do ruído \cite{}, como definido em \ref{eq:2}.  
 
 \begin{equation} \label{eq:2}
     SNR = \frac{P}{\sigma}
 \end{equation}
 
-\begin{equation} \label{eq:3}
-    f(x) = \frac{1}{\sigma \sqrt{2\pi}}e^{-\frac{(x - \mu)^2}{2\sigma ^2}}
+Para facilitar os cálculos, foi decidido normalizar o sinal gerado, dividindo-o pelo valor de seu pico, que se tornaria o valor de referência do sinal. O desvio padrão do ruído foi 
+calculado então em uma região a qual esperaria-se que o sinal predominante seria de tal característica, que no caso dos metabólitos aqui simulados, se traduz na região final do sinal captado e do espectrograma.
+
+\subsubsection{Relação entre desvios padrão}
+
+Com o objetivo de obter maior controle da simulação, investigou-se o comportamento e a dependência entre o $\sigma$ utilizado para a geração de ruído na parte real e imaginária com o $\sigma$ resultante do espectrograma. A primeira abordagem 
+tomada foi analítica, que a partir de definições estatísticas, não obteve sucesso na derivação de alguma relação direta. Optou-se então por uma abordagem experimental, a qual gerou-se um conjunto de sinais 
+corrompidos por desvios padrão de diferentes valores, e relacionou-os com suas partes resultantes no espectrograma, calculados por meio de sua definição 
+estatística em \ref{eq:5}.
+
+\begin{equation} \label{eq:5}
+    \sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})^2}, com \ \bar{x} = \frac{1}{N} \sum_{i = 1}^{N} x_i  
 \end{equation}
+
+Essa investigação possibilitaria a avaliação da implementação de uma função que, recebendo um valor desejado de SNR de entrada, forneceria qual deveria ser o valor aproximado do $\sigma$ usado pela distribuição 
+geradora para que aquele valor de SNR fosse atingido, permitindo assim uma camada maior de controle dos parâmetros da simulação.
+
+
 
 \section{Resultados e Discussão}
 
