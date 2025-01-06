@@ -1,39 +1,11 @@
 %start by defining the document class
-\documentclass[
-12pt,		
-twoside, 
-a4paper,
-chapter=TITLE,
-english,			
-brazil]{USPSC-classe/USPSC}
+\documentclass{article} 
 
 %below the package used for hyperlinking
 \usepackage{graphicx}
-\usepackage[T1]{fontenc}	
-\usepackage[utf8]{inputenc}	
-\usepackage{lmodern}		
-% \usepackage[brazil]{babel}
+\usepackage[brazil]{babel}
 \usepackage{float}
-\usepackage{hyperref}
-\usepackage{amsfonts}
-\usepackage{lastpage}		
-\usepackage{indentfirst}	
-\usepackage{color}						
-\usepackage{chemfig}          
-\usepackage{chemmacros}       
-\usepackage{tikz}			
-\usetikzlibrary{positioning}
-\usepackage{pdfpages}
-\usepackage{makeidx}          
-\usepackage{hyphenat}         
-\usepackage[absolute]{textpos}
-\usepackage{eso-pic}          
-\usepackage{makebox}          
 \graphicspath{ {./images/} }
-
-\setlength{\parindent}{1.3cm}
-\setlength{\parskip}{0.2cm}
-\makeindex
 
 
 %Parameters for titles
@@ -45,8 +17,6 @@ Ressonância Magnética: Da Criação à Corrupção (Por Ruído)}
 
 %beggining of doc
 \begin{document}
-\selectlanguage{brazil}
-\frenchspacing 
 
 %inserting the title defined above
 \maketitle
@@ -82,56 +52,56 @@ MRS das mais variadas condições para que uma análise estatística adequada se
 \subsection{Simulação}
 
 Partindo desse objetivo, a primeira etapa do projeto foi a criação de um ambiente de simulação
-que tivesse a capacidade de lidar com as demandas do projeto. Para a simulação, escrita em uma biblioteca 
-própria customizada de python, foi escolhida uma abordagem mais analítica, considerando que o objeto de estudo seriam
-sinais de MRS gerados a posteriori, e não o fenômeno físico em todos os seus detalhes. Sendo assim, foi simulada a evolução 
-da equação básica de modelagem de um sinal de ressonância magnética, a solução transversal da equação de Bloch \cite{}, 
-descrita em \ref{eq:6}.
-
-\begin{equation} \label{eq:6}
-    \mathbf{\frac{dM(t)}{dt}} = \mathbf{\gamma M(t)} \times \mathbf{B(t)}
-\end{equation}
-
-Quando resolvida, a equação \ref{eq:6} rende a solução \ref{eq:7} para a parte longitudinal, e \ref{eq:1} para a parte transversal.
-
-\begin{equation} \label{eq:7}
-    M_z(t) = M_0 (1 - e^{\frac{-t}{T_1}})
-\end{equation}
+que tivesse a capacidade de lidar com as demandas do projeto. A simulação, escrita em uma biblioteca 
+própria customizada de python, parte da equação básica de modelagem de um sinal de ressonância magnética.
 
 \begin{equation} \label{eq:1}
-    M_{xy}(t) = M_0 e^{i(\omega t + \phi)} e^{\frac{-t}{T_2}}
+    M(t) = M_0 e^{i(\omega t + \phi)} e^{\frac{-t}{T_2}}
 \end{equation}
 
-A equação \ref{eq:1} descreve a evolução da magnetização transversal de um conjunto de spins com magnetização inicial $M_0$, módulo da frequência de precessão $\omega$, fase inicial $\phi$ e constante 
-de relaxação transversal $T_2$. 
+A equação \ref{eq:1} descreve a evolução da magnetização transversal medida ao longo do tempo da parte da amostra medida ao longo do tempo, em Unidades Arbitrárias (U.A.). 
+Apesar de ter o tempo $t$ como variável principal, ela também depende de mais alguns parâmetros para 
+funcionar: $\omega$, que descreve a frequência oscilação do sinal; $\phi$, que define a fase inicial do 
+sinal; $T_2$, que define o tempo de decaimento da magnetização transversal. 
 
-\begin{figure} [H]
-    \includegraphics[scale=0.28]{sinal_simulado.png}
-    \centering
-    \caption{Resultado da simulação de decaimento da magnetização transversal para um conjunto de frequências aleatórias.}
-    \label{fig:3}
+Apesar de inicialmente fornecer uma boa modelagem do sinal, essa equação por si só não da conta de simular todo o processo de 
+uma aquisição de um sinal de MRI, visto que ela não considera os procedimentos de eco de spin e gradiente de campo. 
+
+Os ecos de spin, detectados pela primeira vez em 1950 por Erwin Hahn \cite{PhysRev.80.580}, ocorrem quando, após se provocar a 
+inclinação dos spins por meio de um pulso de $\frac{\pi}{2}$, os mesmos são desviados novamente, agora por um pulso que os desvia em 
+$\pi$ radianos no plano perpendicular ao transversal. Esse novo desvio provoca um refaseamento dos spins, de maneira que a intensidade
+da magnetização alcance um novo máximo antes de decair novamente, como se todo o processo fosse reiniciado. Esse procedimento é 
+essencial nos processos de aquisição de sinal pois permite a redefinição do tempo inicial de captura dos sinal, evitando qualquer erro 
+associado ao início do procedimento de excitação dos spins.
+
+Na biblioteca customizada, esse procedimento foi adaptado como sendo um evento que ocorre durante a simulação do sinal, a qual o 
+usuário fornece o instante de tempo que é feito o desvio, e o programa provoca o fenômeno adicionando uma fase de $\pi - 2\theta$, 
+como demonstrado na figura \ref{fig:1}, sendo $\theta = \omega \Delta t$, e $\Delta t$ a quantidade de tempo a qual o sinal evoluiu 
+até a realização do desvio.   
+
+\begin{figure}[H] 
+    \includegraphics{spin-echo.png}
+    \caption{Fase adicional para deslocamento de eco de spin }
+    \label{fig:1}
 \end{figure}
 
-O módulo da frequência de precessão é obtida a partir da razão giromagnética do núcleo alvo da ressonância, $\gamma$, e o campo magnético aplicado na amostra, $B_0$, através 
-da equação de precessão de Larmor, descrita em \ref{eq:8}.
+O gradiente de campo é outro procedimento do processo de aquisição de um sinal de MRI. Apesar de sua principal utilidade ser a 
+seleção de uma região de interesse do sinal por meio da indução de uma frequência de ressonância fora da janela de excitação 
+nos spins abaixo de um gradiente, a sua implementação nesse programa foi feita para replicar o efeito de ecos de spin 
+por uma abordagem diferente. Neste caso, o gradiente já atuante sobre a amostra tem sua direção invertida, o que provoca uma inversão
+na direção das frequências de oscilação dos spins, os fazendo seguir na direção contrária. Como se trata de uma fórmula analítica, 
+apenas inverter os sinais não é o bastante, pois o sinal se comportará como se tivesse, desde o começo, se movimentado na direção 
+contrária. Para corrigir esse problema, uma fase de $2\theta$ deve ser adicionada ao processo após a inversão, como demonstrado pela figura
+\ref{fig:2}, sendo $\theta = \omega \Delta t$. Essa fase adicional irá posicionar os spins na posição anterior à inversão, emulando 
+uma inversão real.
 
-\begin{equation} \label{eq:8}
-    |\mathbf{\omega}| = \gamma B_0
-\end{equation}
-
-No caso do núcleo de hidrogênio $H^1$, o alvo do procedimento de Ressonância Magnética Nuclear aqui simulado, a razão giromagnética é de $\gamma_H = 42,58 \ MHz/T$. O valor da constante de relaxação transversal $T_2$ é 
-uma constante mais empírica, que se origina da interação spin-spin do conjunto de spins sendo estudado. A interação entre os dipolos magnéticos acaba provocando uma perca de coerência de fase de rotação entre os mesmos, 
-que emerge no decaimento do sinal de magnetização transversal medido.
-
-\begin{figure}[H]
-    \includegraphics[scale=0.25]{T2.png}
-    \centering
-    \caption{Exemplo de decaimento das magnetizações longitudinal e transversal para vários tecidos humanos a partir do referncial girante.}
-    \label{fig:7}
+\begin{figure}[H] 
+    \includegraphics{gradient.png}
+    \caption{Fase adicional para a inversão do gradiente}
+    \label{fig:2}
 \end{figure}
 
 \subsection{Aplicação de Metabólitos}
-\label{sec:metabolites}
 
 Com o estabelecimento dos instrumentos necessários para a simulação de sinais de MRS, foi possível então prosseguir para a próxima etapa:
 a simulação de sinais cerebrais de MRS.
@@ -140,11 +110,10 @@ O procedimento de Espectroscopia por Ressonância Magnética (MRS), apesar de co
 diferentes. Enquanto o MRI se preocupa com uma imagem anatômica, ou seja, uma malha de voxels, a MRS se preocupa com a informação contida em apenas um voxel ou grupo 
 reduzido de voxels, denominados voxel-of-interest (VOI). O sinal obtido no VOI é analisado suprimindo os efeitos de lipídeos e água, restando 
 apenas os sinais de ordem menor, relativos à ruído e a, principalmente, metabólitos. Metabólitos são moléculas orgânicas de forma e composição 
-variadas, sendo essenciais em processos celulares. Por possuírem átomos de hidrogênio, os mesmos respondem ao sinal de excitação 
+variadas, sendo essenciais em processos celulares. Por, em sua maioria, possuírem átomos de hidrogênio, os mesmos respondem ao sinal de excitação 
 de ressonância, fornecendo uma resposta próxima ao sinal esperado, diferindo entre si por uma pequena diferença. Essa diferença, denominada deslocamento químico, 
-é causada por efeitos eletrônicos de sua vizinhança química, que por meio de um efeito de blindagem, altera o valor do campo magnetico efetivo sentido pelo núcleo, 
-alterando assim sua frequência de ressonância. Esse fenômeno é medido como o deslocamento relativo à um valor de referência de um composto, usualmente o 
-Tetrametilsilano (TMS) \cite{}, e é representado na literatura pelo símbolo $\delta$. Seu cálculo é dado pela equação \ref{eq:4}.
+é causada por efeitos eletrônicos de sua vizinhança química, e é representado na literatura pelo símbolo $\delta$. Seu valor é calculado de maneira 
+relativa, dado pela equação \ref{eq:4}, usando o valor de um composto, usualmente o Tetrametilsilano (TMS) \cite{}, como referência.
 
 \begin{equation} \label{eq:4}
     \delta = \frac{\nu _{amostra} - \nu _{ref}}{\nu _{ref}}
@@ -192,8 +161,8 @@ previamente discutida, para a geração de sinais cerebrais.
 Apesar de o programa dar conta de simular espectros corretamente a partir dos parâmetros dados, a realidade é que sinais clínicos \textit{in vivo} tem uma aparência significativamente 
 diferente da de um sinal gerado a partir do processo anteriormente descrito. 
 
-Os métodos de aquisição e conversão de sinais analógicos em digitais, por mais avançados que tenham se tornado se comparados à décadas passadas, ainda são limitados em vários aspectos. Uma das principais 
-limitações ainda existentes é a captação de sinal ruidoso, o qual, a depender de sua intensidade, pode dificultar significativamente ou até impedir a análise do sinal desejado. A presença 
+Os métodos de aquisição e conversão de sinais analógicos em digitais, embora avançados se comparados à décadas passadas, ainda são limitados em várias instâncias. Uma das principais 
+limitações ainda presentes é a captação de sinal ruidoso, o qual, a depender de sua intensidade, pode dificultar significativamente ou até impedir a análise do sinal desejado. A presença 
 inevitável de ruído no sinal é, inclusive, uma das principais limitações as quais o MPM pretende enfrentar, tornando sua presença essencial neste estudo. 
 
 \subsubsection{Geração}
@@ -212,21 +181,14 @@ corrupção.
 
 Para fins de controle adequado da corrupção do sinal, a Relação Sinal-Ruído (SNR) foi usada como métrica de sua qualidade. O cálculo da SNR não possui uma definição unificada, podendo variar significativamente a depender da área. Sendo assim, 
 escolheu-se a que seria mais conveniente para o contexto apresentado, atentando-se também a qual seria mais comum nos trabalhos de referência desse projeto. A definição a ser usada é a que 
-leva em consideração o pico do sinal, representado por $P$, e o desvio padrão do ruído, representado por $\sigma$ \cite{}, como definido em \ref{eq:2}.  
+leva em consideração o pico do sinal e o desvio padrão do ruído \cite{}, como definido em \ref{eq:2}.  
 
 \begin{equation} \label{eq:2}
     SNR = \frac{P}{\sigma}
 \end{equation}
 
 Para facilitar os cálculos, foi decidido normalizar o sinal gerado, dividindo-o pelo valor de seu pico, que se tornaria o valor de referência do sinal. O desvio padrão do ruído foi 
-calculado então em uma região a qual esperaria-se que o sinal predominante seria de tal característica, que no caso dos metabólitos aqui simulados, se traduz na região final do sinal captado e do espectro, 
-aqui definida como os últimos $10\%$ do sinal.
-
-\begin{figure} [H]
-    \includegraphics[scale=0.37]{metabolitos-corrompidos.png}
-    \caption{Comparação entre os metabólitos e sua versão corrompida}
-    \label{fig:5}
-\end{figure}
+calculado então em uma região a qual esperaria-se que o sinal predominante seria de tal característica, que no caso dos metabólitos aqui simulados, se traduz na região final do sinal captado e do espectro.
 
 \subsubsection{Relação entre desvios padrão}
 
@@ -236,44 +198,33 @@ corrompidos por desvios padrão de diferentes valores, e relacionou-os com suas 
 estatística em \ref{eq:5}.
 
 \begin{equation} \label{eq:5}
-    \sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})^2}, \ com \ \bar{x} = \frac{1}{N} \sum_{i = 1}^{N} x_i  
+    \sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})^2}, com \ \bar{x} = \frac{1}{N} \sum_{i = 1}^{N} x_i  
 \end{equation}
 
 Essa investigação possibilitaria a avaliação da implementação de uma função que, recebendo um valor desejado de SNR de entrada, forneceria qual deveria ser o valor aproximado do $\sigma$ usado pela distribuição 
 geradora para que aquele valor de SNR fosse atingido, permitindo assim uma camada maior de controle dos parâmetros da simulação.
 
+
+
 \section{Resultados e Discussão}
 
-Para investigar a relação descrita, foram definidos limites dentro dos quais o desvio padrão usado na geração seria variado. Para isso foram gerados alguns sinais, baseando-se no espectro de metabólitos descritos na \autoref{sec:metabolites} com $\sigma$ variando em um intervalo de $(0, 7)$, e calculados suas SNRs.
-Comparando os valores calculados com exemplos da literatura \cite{}, conclui-se, como pode ser verificado pela figura \ref{fig:9}, que o intervalo de $\sigma$ o qual um sinal pode ser compreendido como tal, e não apenas ruído, seria aproximadamente $(0, 3)$.
-
-\begin{figure}[H]
-    \includegraphics[scale=0.22]{snr_limits.png}
-    \centering
-    \caption{Limites de validade do desvio padrão.}
-    \label{fig:9}
+\begin{figure} [H]
+    \includegraphics[scale=0.28]{spin-echo-example.png}
+    \caption{Resultado da simulação de eco de spins}
+    \label{fig:3}
 \end{figure}
 
-Em seguida, foram gerados um conjunto de $300$ sinais corrompidos por ruídos gaussianos com desvios padrão variando dentro dos limites definidos, $100$ vezes. Para cada vez, foi calculado seu espectro, e para cada espectro foi calculado o desvio padrão resultante, que por sua vez contribuiu para o cálculo do desvio padrão 
-resultante médio de cada sinal corrompido. Por meio da \autoref{eq:2}, com o pico normalizado como descrito anteriormente para $1$, foi também possível calcular qual seria o SNR médio resultante.
+\begin{figure} [H]
+    \includegraphics[scale=0.37]{metabolitos-corrompidos.png}
+    \caption{Comparação entre os metabólitos e sua versão corrompida}
+    \label{fig:5}
+\end{figure}
 
 \begin{figure} [H]
     \includegraphics[scale=0.37]{evolucao-sigmas.png}
     \caption{Evolução do $\sigma$ gerado com relação ao $\sigma$ utilizado para a geração do ruído.}
     \label{fig:6}
 \end{figure}
-
-Pela \autoref{fig:6}, verifica-se que o desvio padrão resultante $\sigma_r$ parece ter uma relação não linear com o desvio padrão usado na geração. Partindo do pressuposto que a relação se assemelha a uma função exponencial, a \autoref{eq:9} foi utilizada como modelo para o ajuste dos dados. É importante ressaltar que 
-$a$ e $c$ são constantes, e $b = \ln(a)$ de maneira a garantir que no zero a função, assim como os dados indicam, seja também zero.
-
-\begin{equation} \label{eq:9}
-    f(x) = a - e^{b - cx} 
-\end{equation}
-
-O ajuste foi feito em 20 conjuntos de médias diferentes, resultando um $a$ médio e $c$ médio de: . Com os parâmetros calculados e a partir da relação \autoref{eq:2}, foi criada uma função que, a partir de um valor de entrada de SNR, estima um valor aproximado para qual deve ser o desvio padrão a ser usado para 
-gerar o ruído a corromper o sinal real de maneira a atingir o SNR desejado.
-
-Essa função foi então testada a fim de garantir sua acurácia na predição dos desvios padrão. Como pode ser conferido pela \autoref{fig:7}, o sigma resultante gerou sinais cujos SNR dos espectros difere dos SNR desejados, com um erro que cresce linearmente com o SNR.
 
 \begin{figure} [H]
     \includegraphics[scale=0.5]{evolucao-rmse-errado.png}
