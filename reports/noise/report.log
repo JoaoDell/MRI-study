@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.18)  6 JAN 2025 14:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.3.18)  28 JAN 2025 10:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1366,131 +1366,153 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 LaTeX Font Info:    Trying to load font information for T1+lmss on input line 54.
  (c:/texlive/2024/texmf-dist/tex/latex/lm/t1lmss.fd
 File: t1lmss.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
-) [1
+)
+
+LaTeX Warning: Citation `' on page 1 undefined on input line 70.
+
+
+LaTeX Warning: Citation `' on page 1 undefined on input line 71.
+
+[1
 Non-PDF special ignored!
 <special> header=psfrag.pro
 
 {c:/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}]
 
-LaTeX Warning: Citation `' on page 2 undefined on input line 88.
+LaTeX Warning: Citation `' on page 2 undefined on input line 90.
+
+
+LaTeX Warning: Citation `' on page 2 undefined on input line 91.
 
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <12> on input line 91.
+(Font)              <12> on input line 96.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 91.
+(Font)              <8> on input line 96.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 91.
-<./images/sinal_simulado.png, id=24, 902.6523pt x 339.669pt>
+(Font)              <6> on input line 96.
+
+LaTeX Warning: Citation `' on page 2 undefined on input line 113.
+
+[2{c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}]
+<./images/sinal_simulado.png, id=36, 902.6523pt x 339.669pt>
 File: ./images/sinal_simulado.png Graphic file (type png)
 <use ./images/sinal_simulado.png>
-Package pdftex.def Info: ./images/sinal_simulado.png  used on input line 109.
+Package pdftex.def Info: ./images/sinal_simulado.png  used on input line 134.
 (pdftex.def)             Requested size: 252.74092pt x 95.10666pt.
-[2{c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}{c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}
+ [3{c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}
 pdfTeX warning (ext4): destination with the same identifier (name{figure.0.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.117 
+l.150 
        <./images/sinal_simulado.png>]
-<./images/T2.png, id=49, 1283.5152pt x 618.6312pt>
+<./images/T2.png, id=55, 1283.5152pt x 618.6312pt>
 File: ./images/T2.png Graphic file (type png)
 <use ./images/T2.png>
-Package pdftex.def Info: ./images/T2.png  used on input line 127.
+Package pdftex.def Info: ./images/T2.png  used on input line 152.
 (pdftex.def)             Requested size: 320.878pt x 154.65741pt.
 
 
-LaTeX Warning: Citation `' on page 3 undefined on input line 147.
+LaTeX Warning: Citation `' on page 4 undefined on input line 172.
 
-[3
+
+Underfull \vbox (badness 2469) has occurred while \output is active []
+
+ [4
 pdfTeX warning (ext4): destination with the same identifier (name{figure.0.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.148 
-       <./images/T2.png>]
-<./images/metabolites.png, id=61, 917.829pt x 353.4003pt>
+l.176 \end{equation}
+                     <./images/T2.png>]
+<./images/metabolites.png, id=67, 917.829pt x 353.4003pt>
 File: ./images/metabolites.png Graphic file (type png)
 <use ./images/metabolites.png>
-Package pdftex.def Info: ./images/metabolites.png  used on input line 185.
+Package pdftex.def Info: ./images/metabolites.png  used on input line 210.
 (pdftex.def)             Requested size: 339.59142pt x 130.75604pt.
- [4
+ [5
 pdfTeX warning (ext4): destination with the same identifier (name{table.0.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.194 
+l.224 
       
 pdfTeX warning (ext4): destination with the same identifier (name{figure.0.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.194 
+l.224 
        <./images/metabolites.png>]
 
-LaTeX Warning: Citation `' on page 5 undefined on input line 215.
+LaTeX Warning: Citation `' on page 6 undefined on input line 241.
 
-[5]
-<./images/metabolitos-corrompidos.png, id=83, 921.4425pt x 353.4003pt>
+<./images/metabolitos-corrompidos.png, id=80, 921.4425pt x 353.4003pt>
 File: ./images/metabolitos-corrompidos.png Graphic file (type png)
 <use ./images/metabolitos-corrompidos.png>
-Package pdftex.def Info: ./images/metabolitos-corrompidos.png  used on input line 226.
+Package pdftex.def Info: ./images/metabolitos-corrompidos.png  used on input line 252.
 (pdftex.def)             Requested size: 340.92839pt x 130.75604pt.
 
+Underfull \vbox (badness 1983) has occurred while \output is active []
 
-LaTeX Warning: Citation `' on page 6 undefined on input line 248.
+ [6]
 
-<./images/snr_limits.png, id=87, 1469.2491pt x 896.148pt>
+LaTeX Warning: Citation `' on page 7 undefined on input line 275.
+
+<./images/snr_limits.png, id=92, 1606.5621pt x 909.1566pt>
 File: ./images/snr_limits.png Graphic file (type png)
 <use ./images/snr_limits.png>
-Package pdftex.def Info: ./images/snr_limits.png  used on input line 251.
-(pdftex.def)             Requested size: 323.2358pt x 197.15317pt.
-[6
+Package pdftex.def Info: ./images/snr_limits.png  used on input line 279.
+(pdftex.def)             Requested size: 353.44476pt x 200.01506pt.
+[7
 pdfTeX warning (ext4): destination with the same identifier (name{figure.0.4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.256 
-      {c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc} <./images/metabolitos-corrompidos.png>]
-<./images/evolucao-sigmas.png, id=100, 913.4928pt x 351.9549pt>
+l.284 
+       <./images/metabolitos-corrompidos.png>]
+<./images/evolucao-sigmas.png, id=106, 897.5934pt x 339.669pt>
 File: ./images/evolucao-sigmas.png Graphic file (type png)
 <use ./images/evolucao-sigmas.png>
-Package pdftex.def Info: ./images/evolucao-sigmas.png  used on input line 261.
-(pdftex.def)             Requested size: 337.98705pt x 130.22127pt.
- [7
+Package pdftex.def Info: ./images/evolucao-sigmas.png  used on input line 289.
+(pdftex.def)             Requested size: 332.10435pt x 125.67555pt.
+ [8
 pdfTeX warning (ext4): destination with the same identifier (name{figure.0.5}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.275 
+l.304 
       
 pdfTeX warning (ext4): destination with the same identifier (name{figure.0.6}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.275 
+l.304 
        <./images/snr_limits.png> <./images/evolucao-sigmas.png>]
-<./images/evolucao-rmse-errado.png, id=114, 439.4016pt x 341.1144pt>
+<./images/evolucao-rmse-errado.png, id=119, 900.4842pt x 339.669pt>
 File: ./images/evolucao-rmse-errado.png Graphic file (type png)
 <use ./images/evolucao-rmse-errado.png>
-Package pdftex.def Info: ./images/evolucao-rmse-errado.png  used on input line 279.
-(pdftex.def)             Requested size: 219.70026pt x 170.55676pt.
-<./images/evolucao-rmse.png, id=115, 430.0065pt x 341.1144pt>
+Package pdftex.def Info: ./images/evolucao-rmse-errado.png  used on input line 312.
+(pdftex.def)             Requested size: 450.241pt x 169.83408pt.
+<./images/evolucao-rmse.png, id=121, 431.4519pt x 341.1144pt>
 File: ./images/evolucao-rmse.png Graphic file (type png)
 <use ./images/evolucao-rmse.png>
-Package pdftex.def Info: ./images/evolucao-rmse.png  used on input line 286.
-(pdftex.def)             Requested size: 215.00272pt x 170.55676pt.
- [8
+Package pdftex.def Info: ./images/evolucao-rmse.png  used on input line 329.
+(pdftex.def)             Requested size: 215.72542pt x 170.55676pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [9
 pdfTeX warning (ext4): destination with the same identifier (name{figure.0.7}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.301 
-      
+l.334 
+       <./images/evolucao-rmse-errado.png>] (./report.bbl [10
 pdfTeX warning (ext4): destination with the same identifier (name{figure.0.8}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.301 
-       <./images/evolucao-rmse-errado.png> <./images/evolucao-rmse.png>] (./report.bbl [9] [10
-
-]
+l.1 \begin{thebibliography}{1}
+                               <./images/evolucao-rmse.png>]
 
 Package hyperref Warning: Token not allowed in a PDF string (Unicode):
 (hyperref)                removing `\uppercase' on input line 1.
 
 bibitemlist
-) [11] 
+) [11
+
+] 
 enddocument/afterlastpage: lastpage setting LastPage.
 (./report.aux)
  ***********
@@ -1507,17 +1529,17 @@ LaTeX Warning: There were multiply-defined labels.
  ) 
 Here is how much of TeX's memory you used:
  38646 strings out of 474104
- 818651 string characters out of 5747502
+ 818597 string characters out of 5747502
  1940496 words of memory out of 5000000
- 60368 multiletter control sequences out of 15000+600000
+ 60367 multiletter control sequences out of 15000+600000
  632769 words of font info for 97 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,11n,107p,518b,1040s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmmi12.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmmi6.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmmi8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmr6.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmr8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmri12.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmss12.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmss17.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmsy6.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/lm/lmsy8.pfb>
-Output written on report.pdf (11 pages, 972559 bytes).
+Output written on report.pdf (11 pages, 1024080 bytes).
 PDF statistics:
- 258 PDF objects out of 1000 (max. 8388607)
- 195 compressed objects within 2 object streams
- 45 named destinations out of 1000 (max. 500000)
+ 263 PDF objects out of 1000 (max. 8388607)
+ 200 compressed objects within 2 object streams
+ 46 named destinations out of 1000 (max. 500000)
  141 words of extra memory for PDF output out of 10000 (max. 10000000)
 

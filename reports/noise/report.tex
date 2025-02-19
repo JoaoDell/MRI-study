@@ -67,10 +67,35 @@ mais altos. Os limites destes comportamentos, bem como sua caracterização para
 simulado, ainda estão sendo completamente caracterizados.
 \section{Introdução}
 
-\begin{enumerate}
-    \item Falar do objetivo a curto e longo prazo do presente trabalho.
-    \item Falar sobre a importância de se ter um ambiente controlado para o objetivo final do trabalho. 
-\end{enumerate}
+A Ressonância Magnética Nuclear (MRN), inaugurada por meio do trabalho de Isidor Rabi em 1938 \cite{} e 
+posteriormente expandida por Felix Bloch e Edward Mills em 1946 \cite{}, é uma das mais importantes e proeminentes áreas das
+ciências físicas contemporâneas. Com subáreas que incluem Imageamento por Ressonância Magnética (MRI) e 
+Espectroscopia por Ressonância Magnética (MRS), sua aplicação nos estudos da saúde humana certamente contribuiu para
+avanços significativos no aumento da expectativa de vida mundial, além de fornecer acesso a uma visão do corpo humano que antes
+era vislumbrada apenas por meio de processos invasivos.
+
+A Espectroscopia por Ressonância Magnética (MRS), domínio de interesse do presente trabalho, é uma subárea da MRN que estuda espectros de resposta de compostos químicos 
+quando excitados por sinais de RM. Esses espectros, por sua vez, tem uma ordem de grandeza de sinal menor se comparados aos 
+sinais recebidos pelo MRI, que são emitidos principalmente por água e gordura. Suprimindo esses elementos de maior sinal, 
+o estudo de tais compostos se torna possível. Essa subárea viabiliza exames da saúde de partes como o cérebro, 
+que por meio da análise dos picos de resposta de cada composto, consegue verificar quantidades, as quais se comparadas a um exame 
+saudável de referência, podem indicar distúrbios.
+
+Apesar de se encontrar em um estágio avançado de compreensão, sendo pesquisada constantemente por centenas de grupos ao redor do mundo, a 
+área geral de MRN ainda carece de entendimento de alguns fenômenos, além de ter aplicação limitada por insuficiências de equipamento. 
+Uma das insuficiências, caracterizada pela presença de ruído em sinais, pode afetar consideravelmente a capacidade de 
+analisar de maneira efetiva sinais de espectroscopia. 
+
+De maneira a mitigar os efeitos causados pelo ruído, especialmente no domínio da MRS, é sugerida a utilização do método Matrix Pencil Method (MPM). O MPM é uma técnica numérica
+de estimação de parâmetros de sinais, desenvolvido oiriginalmente por Yingbo Hua e Tapan Sakar \cite{} como uma alternativa a métodos já existentes 
+como o de Prony \cite{}. O método consiste em modelar os sinais como uma soma de exponenciais complexas amortecidas, como na \autoref{eq:11}. Partindo 
+dessa ideia, é então aplicada uma série de etapas, que inclui a utilização de outros métodos como Decomposição em Valores Singulares (SVD), para estimar
+os parâmteros dessa função modeladora.  
+
+
+\begin{equation} \label{eq:11}
+    y(n) = \sum_{k=1}^{M} R_k e^{i (\omega_k t + \phi_k) + \alpha_k }
+\end{equation}
 
 \section{Métodos}
 
@@ -86,13 +111,13 @@ que tivesse a capacidade de lidar com as demandas do projeto. Para a simulação
 própria customizada de python, foi escolhida uma abordagem mais analítica, considerando que o objeto de estudo seriam
 sinais de MRS gerados a posteriori, e não o fenômeno físico em todos os seus detalhes. Sendo assim, foi simulada a evolução 
 da equação básica de modelagem de um sinal de ressonância magnética, a solução transversal da equação de Bloch \cite{}, 
-descrita em \ref{eq:6}.
+descrita na \autoref{eq:6}.
 
 \begin{equation} \label{eq:6}
     \mathbf{\frac{dM(t)}{dt}} = \mathbf{\gamma M(t)} \times \mathbf{B(t)}
 \end{equation}
 
-Quando resolvida, a equação \ref{eq:6} rende a solução \ref{eq:7} para a parte longitudinal, e \ref{eq:1} para a parte transversal.
+Quando resolvida, a \autoref{eq:6} rende a \autoref{eq:7} para a parte longitudinal, e a \autoref{eq:1} para a parte transversal.
 
 \begin{equation} \label{eq:7}
     M_z(t) = M_0 (1 - e^{\frac{-t}{T_1}})
@@ -102,7 +127,7 @@ Quando resolvida, a equação \ref{eq:6} rende a solução \ref{eq:7} para a par
     M_{xy}(t) = M_0 e^{i(\omega t + \phi)} e^{\frac{-t}{T_2}}
 \end{equation}
 
-A equação \ref{eq:1} descreve a evolução da magnetização transversal de um conjunto de spins com magnetização inicial $M_0$, módulo da frequência de precessão $\omega$, fase inicial $\phi$ e constante 
+A \autoref{eq:1} descreve a evolução da magnetização transversal de um conjunto de spins com magnetização inicial $M_0$, módulo da frequência de precessão $\omega$, fase inicial $\phi$ e constante 
 de relaxação transversal $T_2$. 
 
 \begin{figure} [H]
@@ -113,7 +138,7 @@ de relaxação transversal $T_2$.
 \end{figure}
 
 O módulo da frequência de precessão é obtida a partir da razão giromagnética do núcleo alvo da ressonância, $\gamma$, e o campo magnético aplicado na amostra, $B_0$, através 
-da equação de precessão de Larmor, descrita em \ref{eq:8}.
+da equação de precessão de Larmor, descrita pela \autoref{eq:8}.
 
 \begin{equation} \label{eq:8}
     |\mathbf{\omega}| = \gamma B_0
@@ -144,14 +169,14 @@ variadas, sendo essenciais em processos celulares. Por possuírem átomos de hid
 de ressonância, fornecendo uma resposta próxima ao sinal esperado, diferindo entre si por uma pequena diferença. Essa diferença, denominada deslocamento químico, 
 é causada por efeitos eletrônicos de sua vizinhança química, que por meio de um efeito de blindagem, altera o valor do campo magnetico efetivo sentido pelo núcleo, 
 alterando assim sua frequência de ressonância. Esse fenômeno é medido como o deslocamento relativo à um valor de referência de um composto, usualmente o 
-Tetrametilsilano (TMS) \cite{}, e é representado na literatura pelo símbolo $\delta$. Seu cálculo é dado pela equação \ref{eq:4}.
+Tetrametilsilano (TMS) \cite{}, e é representado na literatura pelo símbolo $\delta$. Seu cálculo é dado pela \autoref{eq:4}.
 
 \begin{equation} \label{eq:4}
-    \delta = \frac{\nu _{amostra} - \nu _{ref}}{\nu _{ref}}
+    \delta = \frac{\nu _{amostra} - \nu _{autoref}}{\nu _{autoref}}
 \end{equation}
 
 
-Foram organizados na tabela \ref{table:1}, a partir do trabalho de Danilo Mendes \cite{Silva2020-io}, os parâmetros de desvio químico ($\delta$), tempo de relaxação 
+Foram organizados na \autoref{table:1}, a partir do trabalho de Danilo Mendes \cite{Silva2020-io}, os parâmetros de desvio químico ($\delta$), tempo de relaxação 
 transversal ($T_2$) e amplitude de alguns metabólitos comumente encontrados no cérebro, sob regime de 3T. Esses valores são então usados como entrada na simulação
 previamente discutida, para a geração de sinais cerebrais. 
 
@@ -183,6 +208,7 @@ previamente discutida, para a geração de sinais cerebrais.
 
 \begin{figure} [H]
     \includegraphics[scale=0.37]{metabolites.png}
+    \centering
     \caption{Resultado da simulação dos metabólitos}
     \label{fig:4}
 \end{figure}
@@ -198,7 +224,7 @@ inevitável de ruído no sinal é, inclusive, uma das principais limitações as
 
 \subsubsection{Geração}
 
-No caso da maioria dos sinais captados, o ruído tem como distribuição geradora uma função gaussiana, definida pela equação \ref{eq:3}. Nessa distribuição, $\mu$ representa seu valor central, 
+No caso da maioria dos sinais captados, o ruído tem como distribuição geradora uma função gaussiana, definida pela \autoref{eq:3}. Nessa distribuição, $\mu$ representa seu valor central, 
 que no caso do ruído captado por aparelhos, tem valor nulo. O segundo parâmetro, $\sigma$, representa a largura do intervalo de variação dos valores gerados a partir dessa 
 distribuição, definido como sendo o valor adquirido na meia altura da curva, denominado desvio padrão.
 
@@ -212,7 +238,7 @@ corrupção.
 
 Para fins de controle adequado da corrupção do sinal, a Relação Sinal-Ruído (SNR) foi usada como métrica de sua qualidade. O cálculo da SNR não possui uma definição unificada, podendo variar significativamente a depender da área. Sendo assim, 
 escolheu-se a que seria mais conveniente para o contexto apresentado, atentando-se também a qual seria mais comum nos trabalhos de referência desse projeto. A definição a ser usada é a que 
-leva em consideração o pico do sinal, representado por $P$, e o desvio padrão do ruído, representado por $\sigma$ \cite{}, como definido em \ref{eq:2}.  
+leva em consideração o pico do sinal, representado por $P$, e o desvio padrão do ruído, representado por $\sigma$ \cite{}, como definido pela \autoref{eq:2}.  
 
 \begin{equation} \label{eq:2}
     SNR = \frac{P}{\sigma}
@@ -224,6 +250,7 @@ aqui definida como os últimos $10\%$ do sinal.
 
 \begin{figure} [H]
     \includegraphics[scale=0.37]{metabolitos-corrompidos.png}
+    \centering
     \caption{Comparação entre os metabólitos e sua versão corrompida}
     \label{fig:5}
 \end{figure}
@@ -233,7 +260,7 @@ aqui definida como os últimos $10\%$ do sinal.
 Com o objetivo de obter maior controle da simulação, investigou-se o comportamento e a dependência entre o $\sigma$ utilizado para a geração de ruído na parte real e imaginária com o $\sigma$ resultante do espectro. A primeira abordagem 
 tomada foi analítica, que a partir de definições estatísticas, não obteve sucesso na derivação de alguma relação direta. Optou-se então por uma abordagem experimental, a qual gerou-se um conjunto de sinais 
 corrompidos por desvios padrão de diferentes valores, e relacionou-os com suas partes resultantes no espectro, calculados por meio de sua definição 
-estatística em \ref{eq:5}.
+estatística pela \autoref{eq:5}.
 
 \begin{equation} \label{eq:5}
     \sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \bar{x})^2}, \ com \ \bar{x} = \frac{1}{N} \sum_{i = 1}^{N} x_i  
@@ -245,7 +272,8 @@ geradora para que aquele valor de SNR fosse atingido, permitindo assim uma camad
 \section{Resultados e Discussão}
 
 Para investigar a relação descrita, foram definidos limites dentro dos quais o desvio padrão usado na geração seria variado. Para isso foram gerados alguns sinais, baseando-se no espectro de metabólitos descritos na \autoref{sec:metabolites} com $\sigma$ variando em um intervalo de $(0, 7)$, e calculados suas SNRs.
-Comparando os valores calculados com exemplos da literatura \cite{}, conclui-se, como pode ser verificado pela figura \ref{fig:9}, que o intervalo de $\sigma$ o qual um sinal pode ser compreendido como tal, e não apenas ruído, seria aproximadamente $(0, 3)$.
+Comparando os valores calculados com exemplos da literatura \cite{}, conclui-se, como pode ser verificado pela figura \autoref{fig:9}, que o intervalo de $\sigma$ o qual um sinal pode ser compreendido como tal, e não apenas ruído, seria aproximadamente $(0, 3)$. Para aumentar a precisão de um ajuste de parâmetros da 
+curva resultante a ser feito posteriormente, o limite superior foi aumentado para $5$.
 
 \begin{figure}[H]
     \includegraphics[scale=0.22]{snr_limits.png}
@@ -254,40 +282,61 @@ Comparando os valores calculados com exemplos da literatura \cite{}, conclui-se,
     \label{fig:9}
 \end{figure}
 
-Em seguida, foram gerados um conjunto de $300$ sinais corrompidos por ruídos gaussianos com desvios padrão variando dentro dos limites definidos, $100$ vezes. Para cada vez, foi calculado seu espectro, e para cada espectro foi calculado o desvio padrão resultante, que por sua vez contribuiu para o cálculo do desvio padrão 
+Em seguida, foram gerados um conjunto de $50$ sinais corrompidos por ruídos gaussianos com desvios padrão variando dentro dos limites definidos, com um intervalo de $0.1$ entre cada, $1000$ vezes. Para cada vez, foi calculado seu espectro, e para cada espectro foi calculado o desvio padrão resultante, que por sua vez contribuiu para o cálculo do desvio padrão 
 resultante médio de cada sinal corrompido. Por meio da \autoref{eq:2}, com o pico normalizado como descrito anteriormente para $1$, foi também possível calcular qual seria o SNR médio resultante.
 
 \begin{figure} [H]
     \includegraphics[scale=0.37]{evolucao-sigmas.png}
+    \centering
     \caption{Evolução do $\sigma$ gerado com relação ao $\sigma$ utilizado para a geração do ruído.}
     \label{fig:6}
 \end{figure}
 
-Pela \autoref{fig:6}, verifica-se que o desvio padrão resultante $\sigma_r$ parece ter uma relação não linear com o desvio padrão usado na geração. Partindo do pressuposto que a relação se assemelha a uma função exponencial, a \autoref{eq:9} foi utilizada como modelo para o ajuste dos dados. É importante ressaltar que 
+Pela \autoref{fig:6}, verifica-se que o desvio padrão resultante parece ter uma relação não linear com o desvio padrão usado na geração. Partindo do pressuposto que a relação se assemelha a uma função exponencial, a \autoref{eq:9} foi utilizada como modelo para o ajuste dos dados. É importante ressaltar que 
 $a$ e $c$ são constantes, e $b = \ln(a)$ de maneira a garantir que no zero a função, assim como os dados indicam, seja também zero.
 
 \begin{equation} \label{eq:9}
-    f(x) = a - e^{b - cx} 
+    SNR(\sigma) = a - e^{b - c\sigma} 
 \end{equation}
 
-O ajuste foi feito em 20 conjuntos de médias diferentes, resultando um $a$ médio e $c$ médio de: . Com os parâmetros calculados e a partir da relação \autoref{eq:2}, foi criada uma função que, a partir de um valor de entrada de SNR, estima um valor aproximado para qual deve ser o desvio padrão a ser usado para 
+O ajuste foi feito em 20 conjuntos de médias diferentes, resultando em um $a = (0.494 \pm 0.002)$ e $c = (0.306 \pm 0.002)$. Com os parâmetros calculados e a partir da relação \autoref{eq:2}, foi criada uma função que, a partir de um valor de entrada de SNR, estima um valor aproximado para qual deve ser o desvio padrão a ser usado para 
 gerar o ruído a corromper o sinal real de maneira a atingir o SNR desejado.
+
+\begin{equation} \label{eq:10}
+    \sigma (SNR) = \frac{log(a) - log(a - \frac{1}{SNR})}{c}
+\end{equation}
 
 Essa função foi então testada a fim de garantir sua acurácia na predição dos desvios padrão. Como pode ser conferido pela \autoref{fig:7}, o sigma resultante gerou sinais cujos SNR dos espectros difere dos SNR desejados, com um erro que cresce linearmente com o SNR.
 
 \begin{figure} [H]
     \includegraphics[scale=0.5]{evolucao-rmse-errado.png}
     \centering
-    \caption{ERRADO Evolução do RMSE gerado com relação ao SNR requisitado.}
+    \caption{Evolução do RMSE gerado com relação ao SNR requisitado.}
     \label{fig:7}
 \end{figure}
 
+Apesar de os valores resultantes serem diferentes, sua relação ainda parecia ser linear. 
+Foi feita então uma segunda correção, ajustando uma curva à reta que relaciona o SNR alvo com 
+o resultante de maneira a prever qual seria sua relação, utilizando a \autoref{eq:12}.
+
+\begin{equation} \label{eq:12}
+    SNR_{resultante} = a SNR_{alvo} + b    
+\end{equation}
+Essa correção permitiria ajustar o SNR alvo de maneira a encontrar o valor na reta que de 
+fato correspondesse ao valor requisitado. Esse ajuste gerou uma reta com parâmteros 
+$a = (0.1591 \pm 0.0001)$ e $b = (-1.00 \pm 0.03)$.
 \begin{figure} [H]
     \includegraphics[scale=0.5]{evolucao-rmse.png}
     \centering
     \caption{Evolução do RMSE gerado com relação ao SNR requisitado após a correção.}
     \label{fig:8}
 \end{figure}
+
+Após essa correção, a função de predição foi novamente testada, agora com os parâmetros de ajuste da reta.
+Como pode ser conferido pela \autoref{fig:8}, o erro dos SNRs resultantes após a correção foi 
+significativamente menor, chegando à casa de poucas unidades para os valores mais altos. Esse resultado 
+demonstrou uma capacidade de predição relevante do sigma necessário para valores de SNR requisitados, permitindo 
+assim um maior nível de controle da simulação.
 
 \section{Conclusão}
 

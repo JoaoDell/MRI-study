@@ -1,22 +1,22 @@
 # Fdb version 4
-["bibtex report"] 1736186024.57417 "report.aux" "report.bbl" "report" 1736186029.27471 0
+["bibtex report"] 1738071448.94935 "report.aux" "report.bbl" "report" 1738071477.43409 0
   "./refs.bib" 1731000085 757 d418126a2273e95e5d7a71f6d7b4dfb1 ""
   "c:/texlive/2024/texmf-dist/bibtex/bst/base/plain.bst" 1710783258 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "report.aux" 1736186027 8074 b51b455993d8521346807fdff1548840 "pdflatex"
+  "report.aux" 1738071476 8312 1a72cb06294857e080c28cffad0ad08a "pdflatex"
   (generated)
   "report.bbl"
   "report.blg"
   (rewritten before read)
-["makeindex report.idx"] 1736185990.35924 "report.idx" "report.ind" "report" 1736186029.27414 0
-  "report.idx" 1736186026 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+["makeindex report.idx"] 1736185990.35924 "report.idx" "report.ind" "report" 1738071477.4336 0
+  "report.idx" 1738071474 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
   (generated)
   "report.ilg"
   "report.ind"
   (rewritten before read)
-["pdflatex"] 1736186025.12948 "c:/Users/Lampada/Desktop/Mestrado/MRI-study/reports/noise/report.tex" "report.pdf" "report" 1736186029.27524 0
+["pdflatex"] 1738071473.26523 "c:/Users/Lampada/Desktop/Mestrado/MRI-study/reports/noise/report.tex" "report.pdf" "report" 1738071477.4346 0
   "USPSC-classe/USPSC.cls" 1736183391 56857 661ae71eaffdbc159da6dee40eb07700 ""
   "USPSC-unidades" 0 -1 0 ""
-  "c:/Users/Lampada/Desktop/Mestrado/MRI-study/reports/noise/report.tex" 1736186019 17434 1dcb5d93b7bfb4a9b06b259f9dbc2e7a ""
+  "c:/Users/Lampada/Desktop/Mestrado/MRI-study/reports/noise/report.tex" 1738071472 21381 f6e23682ef0bf2c98ef877abc20fb071 ""
   "c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc" 1710784720 2375 baa924870cfb487815765f9094cf3728 ""
   "c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc" 1710784720 3486 c7eadf5dcc57b3b2d11736679f6636ba ""
   "c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc" 1710784720 2405 5dcf2c1b967ee25cc46c58cd52244aed ""
@@ -271,17 +271,17 @@
   "c:/texlive/2024/texmf-var/web2c/pdftex/pdflatex.fmt" 1710786868 8222552 5217f0dee8149076c15478aa322bc842 ""
   "c:/texlive/2024/texmf.cnf" 1710786649 713 e69b156964470283e0530f5060668171 ""
   "images/T2.png" 1733942619 104871 aa44697bf45ef405c4de40adb5460d78 ""
-  "images/evolucao-rmse-errado.png" 1731006488 42687 2b3f3fa594d4c254e9288656a0874d53 ""
-  "images/evolucao-rmse.png" 1731006308 44572 fc8104d5ee40c1dbe0797fe9f16ab495 ""
-  "images/evolucao-sigmas.png" 1731007152 78377 37ffcb5f20cfd671ad7cf421dc592472 ""
+  "images/evolucao-rmse-errado.png" 1738009070 55305 6f138c611431d52f272419187515f5bb ""
+  "images/evolucao-rmse.png" 1738009089 43744 c1a783a22d3cc31ac1b6edf17c24e89c ""
+  "images/evolucao-sigmas.png" 1738009556 55705 df673f3628ce0e198262370a72285eb3 ""
   "images/metabolites.png" 1731003185 53104 4850f80039bc6a40fd40d75cd531d437 ""
   "images/metabolitos-corrompidos.png" 1731003510 65613 1596dbfd9b5b0bf16275dbafb15a008d ""
   "images/sinal_simulado.png" 1733946334 86639 ae971bfd14df2a1b760b8a8fb7f84df6 ""
-  "images/snr_limits.png" 1733947290 291442 0046deba2e666a01e0361d0dfa02d30c ""
-  "report.aux" 1736186027 8074 b51b455993d8521346807fdff1548840 "pdflatex"
-  "report.bbl" 1736186025 282 3a8113913ba11934be42226e7faec2fc "bibtex report"
+  "images/snr_limits.png" 1736190756 346363 121756d7f6fbde0743a674014ac17994 ""
+  "report.aux" 1738071476 8312 1a72cb06294857e080c28cffad0ad08a "pdflatex"
+  "report.bbl" 1738071449 282 3a8113913ba11934be42226e7faec2fc "bibtex report"
   "report.ind" 1736185990 0 d41d8cd98f00b204e9800998ecf8427e "makeindex report.idx"
-  "report.tex" 1736186019 17434 1dcb5d93b7bfb4a9b06b259f9dbc2e7a ""
+  "report.tex" 1738071472 21381 f6e23682ef0bf2c98ef877abc20fb071 ""
   (generated)
   "report.aux"
   "report.idx"
