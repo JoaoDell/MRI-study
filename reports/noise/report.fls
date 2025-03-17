@@ -423,7 +423,8 @@ INPUT c:/texlive/2024/texmf-dist/tex/latex/lm/t1lmss.fd
 INPUT c:/texlive/2024/texmf-dist/tex/latex/lm/t1lmss.fd
 INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/ec-lmss12.tfm
 INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/ec-lmss17.tfm
-INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/ec-lmbx12.tfm
+INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/ec-lmss12.tfm
+INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/ec-lmri12.tfm
 INPUT c:/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map
 INPUT c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc
 INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/rm-lmr12.tfm
@@ -450,7 +451,6 @@ INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/lmmib7.tfm
 INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/lmbsy10.tfm
 INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/lmbsy10.tfm
 INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/lmbsy7.tfm
-INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/ec-lmss12.tfm
 INPUT c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc
 INPUT c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc
 INPUT c:/texlive/2024/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc
@@ -467,7 +467,6 @@ INPUT ./images/metabolites.png
 INPUT ./images/metabolites.png
 INPUT ./images/metabolites.png
 INPUT ./images/metabolites.png
-INPUT c:/texlive/2024/texmf-dist/fonts/tfm/public/lm/ec-lmri12.tfm
 INPUT ./images/metabolitos-corrompidos.png
 INPUT ./images/metabolitos-corrompidos.png
 INPUT ./images/metabolitos-corrompidos.png

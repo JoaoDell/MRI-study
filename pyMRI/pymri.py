@@ -325,8 +325,23 @@ def chem_shift_from_f(f : float,
     return (f - f_ref)/f_ref
 
 def check_frequency(w : float, 
-                    dt : float):
-  return np.all(rad_to_hz(w) <= max_frequency(dt))
+                    dt : float,
+                    print_checks : bool = False):
+  """Checks if a given frequency or group of frequencies can be captured by a sampling step.
+  
+  Parameters
+  ----------
+  w : float                         [rad/s]
+    Frequency or array of frequencies.
+  dt : float                        [s]
+    Time step of the simulation. 
+  print_checks : bool = `False`
+    Whether to print or no the checked array. If true, will print a boolean array. Default is set to `False`.
+  """
+  array = rad_to_hz(w) <= max_frequency(dt)
+  if print_checks==True:
+    print(array)
+  return np.all(array)
 
 def plot_chem_shifts(freqs : np.ndarray, 
                      sig_fft : np.ndarray, 
