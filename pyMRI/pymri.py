@@ -364,4 +364,92 @@ def plot_chem_shifts(freqs : np.ndarray,
    if plt.gca().xaxis_inverted() == False:
     plt.gca().invert_xaxis() #inverts the x axis
    plt.grid(True)
+
+def y2y1_matrices(  sig : np.ndarray, 
+                    L : float, 
+                    return_y : bool = False):
+    """Generates the Y matrix for the MPM calculations.
+    
+    Parameters
+    ----------
+    sig : np.ndarray (N, 1)
+        The signal from which the matrix will be generated.
+    L : float [0.0, 1.0]
+        The percentage of the size of the signal where the signal will be sliced.\n
+        Signal slice will be of size `int(L*N)`, where `N` is the total size of the signal.
+    return_y : bool = False
+        Whether to output only the major Y matrix"""
+    N = sig.shape[0]
+    L_ = int(L*N)
+    Y = np.zeros((N - L_, L_ + 1), dtype=np.complex128)
+    for i in range(N - L_):
+        Y[i] = sig[i:i + L_ + 1]
+    if return_y == False:
+        return Y[:,1:], Y[:,:L_] #Y2, Y1
+    else:
+        return Y
+
+def filter_sig(sig : np.ndarray, 
+               L : float, 
+               noise_threshold : float, 
+               rcond : float = 1e-7,
+               return_poles_and_res : bool = False):
+    """Filters a signal using the MPM algorithm. Returns the reconstructed and filtered signal as default, 
+    but can return the poles and residues if `return_poles_and_res` is set to `True`.
+    
+    Parameters
+    ----------
+    sig : np.ndarray
+        Signal to be filtered.
+    L : float `[0.0, 1.0]`
+        The percentage of the size of the signal where the signal will be sliced.\n
+        Signal slice will be of size `int(L*N)`, where `N` is the total size of the signal.
+    noise_threshold : float
+        Threshold for filtering the singular values. 
+        `singular_value/max_singular_value <= noise_threshold` will be filtered out.
+    rcond : float = `1e-7`
+        Threshold for filtering singular values in the Moore-Penrose and least-squares steps. 
+        Default is set to `1e-7`.
+    return_poles_and_res : bool = `False`
+        Whether to return or not the poles and residues. If True, will return the reconstructed signal, 
+        the poles and residues in a tuple."""
+    # Matrix Y generation step
+    N = sig.size
+    L_ = int(L*N)
+    Y = y2y1_matrices(sig, L, return_y=True)
+
+    # SVD noise filtering step
+    U, Sigma, Vt = np.linalg.svd(Y, full_matrices=False)
+    max_sval = Sigma[0]
+    M = Sigma[Sigma/max_sval > noise_threshold].size
+    # below an alternate step that considers the percentage of contribution 
+    # of the total eigenvalues and not the singular values (singular values = sqrt(eigenvalues))
+    # M = Sigma[Sigma**2/np.sum(Sigma**2) > noise_threshold].size 
+    
+    Y_ = np.matmul( np.matmul(U, np.diag(Sigma)[:, :M]), Vt[:M, :] ) # filtered Y
+
+    Y2, Y1 = Y_[:,1:], Y_[:,:L_] #Y2, Y1
+
+    # Matrix Y1^+Y2 construction step
+    Y1_p = np.linalg.pinv(Y1, rcond=rcond)
+    A = np.matmul(Y1_p, Y2)
+
+    # Eigenvalues calculation step
+    w = np.linalg.eigvals(A)
+
+    # Residues calculation step
+    Zs = np.zeros((N, w.shape[0]), dtype=np.complex128)
+    for i in range(N):
+        Zs[i] = np.power(w, i)
+
+    R = np.linalg.lstsq(Zs, sig, rcond=rcond)[0]
+
+    # Reconstruction of the filtered signal step
+    reconstructed_sig = np.zeros(N, dtype=np.complex128)
+    for i in range(L_):
+        reconstructed_sig += R[i]*Zs[:,i]
+    
+    if return_poles_and_res == False:
+      return reconstructed_sig
+    else: reconstructed_sig, w, R
   
