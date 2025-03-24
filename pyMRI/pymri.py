@@ -393,6 +393,7 @@ def filter_sig(sig : np.ndarray,
                L : float, 
                noise_threshold : float, 
                rcond : float = 1e-7,
+               zero_filtering : float = 1e-15,
                return_poles_and_res : bool = False):
     """Filters a signal using the MPM algorithm. Returns the reconstructed and filtered signal as default, 
     but can return the poles and residues if `return_poles_and_res` is set to `True`.
@@ -436,20 +437,29 @@ def filter_sig(sig : np.ndarray,
 
     # Eigenvalues calculation step
     w = np.linalg.eigvals(A)
+    print(w.size)
+    w = w[np.abs(w.real) > zero_filtering]
+    print(w.size)
 
     # Residues calculation step
     Zs = np.zeros((N, w.shape[0]), dtype=np.complex128)
     for i in range(N):
         Zs[i] = np.power(w, i)
 
-    R = np.linalg.lstsq(Zs, sig, rcond=rcond)[0]
+    R = np.linalg.lstsq(Zs, sig, rcond=rcond)[0].astype(np.complex128)
+
+    # Zero values filtering
+    R = R[np.abs(R.real) > zero_filtering]
+
+    L_f = R.size
 
     # Reconstruction of the filtered signal step
     reconstructed_sig = np.zeros(N, dtype=np.complex128)
-    for i in range(L_):
+    for i in range(L_f):
         reconstructed_sig += R[i]*Zs[:,i]
     
     if return_poles_and_res == False:
       return reconstructed_sig
-    else: reconstructed_sig, w, R
+    else: 
+       return reconstructed_sig, w, R
   
