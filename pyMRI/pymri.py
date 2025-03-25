@@ -343,6 +343,21 @@ def check_frequency(w : float,
     print(array)
   return np.all(array)
 
+def fourier_spectrum(sig : np.ndarray, dt : float, B0 : float):
+    """Returns the fourier spectrum and its frequencies, in terms of chemical shift, of a given signal.
+    
+    Parameters
+    ----------
+    sig : np.ndarray    [A.U.]
+        Signal in which the fourier spectrum will be calculated.
+    dt : float          [s]
+        Time step.
+    B0 : float          [T]
+        Magnetic field for the chemical shift calculation."""
+    sig_fft = np.fft.fftshift(np.fft.fft(sig, sig.size))
+    freqs = chem_shift_from_f(np.fft.fftshift(np.fft.fftfreq(sig.size, d = dt)), B0)
+    return freqs, sig_fft
+
 def plot_chem_shifts(freqs : np.ndarray, 
                      sig_fft : np.ndarray, 
                      percentage : float, 
@@ -351,13 +366,12 @@ def plot_chem_shifts(freqs : np.ndarray,
                      ylabel : str = "Intensity (A.U.)",
                      c : str = "deeppink",
                      label : str = None): 
-   plot_freqs = freqs[freqs.size//2 + 1:] # +1 excludes de 0 frequency
-   plot_sig_fft = sig_fft[sig_fft.size//2 + 1:]
+   plot_freqs = freqs[freqs.size//2:] # +1 excludes de 0 frequency
+   plot_sig_fft = sig_fft[sig_fft.size//2:]
  
-   b = plot_freqs.size//2
-   b = int(percentage*b)
+   b = int(percentage*plot_freqs.size)
  
-   plt.plot(plot_freqs[:b], plot_sig_fft.real[:b], c = c, label = label)
+   plt.plot(plot_freqs[:b], np.abs(plot_sig_fft)[:b], c = c, label = label)
    plt.title(title)
    plt.xlabel(xlabel)
    plt.ylabel(ylabel)
@@ -463,3 +477,29 @@ def filter_sig(sig : np.ndarray,
     else: 
        return reconstructed_sig, w, R
   
+def calculate_variables_from_z_and_r(z : np.complex128, r : np.complex128, ts : float):
+    """Calculates the variables `S_0`, `phi`, `omega` and `alpha` from the poles `z` and residues `r`, 
+    calculated from a signal using teh MPM algorithm.
+    
+    Parameters
+    ----------
+    z : np.complex128
+        Pole value or poles array.
+    r : np.complex128
+        Residue value or residues array.
+    ts : float
+        Sampling period."""
+    a, b, c, d = z.real, z.imag, r.real, r.imag
+    s0 = np.sqrt(c**2 + d**2)
+    phi = ( + np.pi*(np.logical_and(c < 0, d >= 0)) 
+            - np.pi*(np.logical_and(c < 0, d < 0)) 
+            + (np.pi/2.0)*(np.logical_and(c == 0, d > 0))
+            - (np.pi/2.0)*(np.logical_and(c == 0, d < 0))
+            + np.arctan(d/c)*(c != 0))
+    omega = (1/ts)*(+ np.pi*(np.logical_and(a < 0, b >= 0)) 
+                    - np.pi*(np.logical_and(a < 0, b < 0)) 
+                    + (np.pi/2.0)*(np.logical_and(a == 0, b > 0))
+                    - (np.pi/2.0)*(np.logical_and(a == 0, b < 0))
+                    + np.arctan(b/a)*(a != 0))
+    alpha = -(1/ts)*np.log( np.sqrt( a**2 + b**2 ))
+    return s0, phi, omega, alpha
