@@ -499,7 +499,7 @@ def filter_sig(sig : np.ndarray,
   
 def calculate_variables_from_z_and_r(z : np.complex128, r : np.complex128, ts : float):
     """Calculates the variables `S_0`, `phi`, `omega` and `alpha` from the poles `z` and residues `r`, 
-    calculated from a signal using teh MPM algorithm.
+    calculated from a signal using the MPM algorithm.
     
     Parameters
     ----------
