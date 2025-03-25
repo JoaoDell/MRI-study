@@ -327,21 +327,21 @@ def chem_shift_from_f(f : float,
 def check_frequency(w : float, 
                     dt : float,
                     print_checks : bool = False):
-  """Checks if a given frequency or group of frequencies can be captured by a sampling step.
-  
-  Parameters
-  ----------
-  w : float                         [rad/s]
-    Frequency or array of frequencies.
-  dt : float                        [s]
-    Time step of the simulation. 
-  print_checks : bool = `False`
-    Whether to print or no the checked array. If true, will print a boolean array. Default is set to `False`.
-  """
-  array = rad_to_hz(w) <= max_frequency(dt)
-  if print_checks==True:
-    print(array)
-  return np.all(array)
+    """Checks if a given frequency or group of frequencies can be captured by a sampling step.
+    
+    Parameters
+    ----------
+    w : float                         [rad/s]
+      Frequency or array of frequencies.
+    dt : float                        [s]
+      Time step of the simulation. 
+    print_checks : bool = `False`
+      Whether to print or no the checked array. If true, will print a boolean array. Default is set to `False`.
+    """
+    array = rad_to_hz(w) <= max_frequency(dt)
+    if print_checks==True:
+      print(array)
+    return np.all(array)
 
 def fourier_spectrum(sig : np.ndarray, dt : float, B0 : float):
     """Returns the fourier spectrum and its frequencies, in terms of chemical shift, of a given signal.
@@ -366,18 +366,38 @@ def plot_chem_shifts(freqs : np.ndarray,
                      ylabel : str = "Intensity (A.U.)",
                      c : str = "deeppink",
                      label : str = None): 
-   plot_freqs = freqs[freqs.size//2:] # +1 excludes de 0 frequency
-   plot_sig_fft = sig_fft[sig_fft.size//2:]
- 
-   b = int(percentage*plot_freqs.size)
- 
-   plt.plot(plot_freqs[:b], np.abs(plot_sig_fft)[:b], c = c, label = label)
-   plt.title(title)
-   plt.xlabel(xlabel)
-   plt.ylabel(ylabel)
-   if plt.gca().xaxis_inverted() == False:
-    plt.gca().invert_xaxis() #inverts the x axis
-   plt.grid(True)
+    """Plots a given spectrum in terms of its chemical shifts.
+    
+    Parameters
+    ----------
+    freqs : np.ndarray
+    Frequencies array.
+    sig_fft : np.ndarray
+    Signal spectrum array.
+    percentage : float (0.0, 1.0]
+    Percentage of the signal to be displayed.
+    title : str = `"Simulated MRS Spectra"`
+    Title of the plot.
+    xlabel : str = `"δ (p.p.m.)"`
+    X-label of the plot.
+    ylabel : str = `"Intensity (A.U.)"`
+    y-label of the plot.
+    c : str = `"deeppink"`
+    Matplotlib color of the plot.
+    label : str = `None`
+    Label of the plot"""
+    plot_freqs = freqs[freqs.size//2:] # +1 excludes de 0 frequency
+    plot_sig_fft = sig_fft[sig_fft.size//2:]
+
+    b = int(percentage*plot_freqs.size)
+
+    plt.plot(plot_freqs[:b], np.abs(plot_sig_fft)[:b], c = c, label = label)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    if plt.gca().xaxis_inverted() == False:
+      plt.gca().invert_xaxis() #inverts the x axis
+    plt.grid(True)
 
 def y2y1_matrices(  sig : np.ndarray, 
                     L : float, 
