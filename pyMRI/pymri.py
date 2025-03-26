@@ -471,9 +471,7 @@ def filter_sig(sig : np.ndarray,
 
     # Eigenvalues calculation step
     w = np.linalg.eigvals(A)
-    print(w.size)
     w = w[np.abs(w.real) > zero_filtering]
-    print(w.size)
 
     # Residues calculation step
     Zs = np.zeros((N, w.shape[0]), dtype=np.complex128)
@@ -523,3 +521,50 @@ def calculate_variables_from_z_and_r(z : np.complex128, r : np.complex128, ts : 
                     + np.arctan(b/a)*(a != 0))
     alpha = -(1/ts)*np.log( np.sqrt( a**2 + b**2 ))
     return s0, phi, omega, alpha
+
+def unpack_metabolites(metabolites : dict, B0 : float, met_slice : int = 15, return_deltas : bool = False):
+    """Unpacks metabolite information from the METABOLITES variable. 
+    
+    Parameters
+    ----------
+    metabolites : dict
+        METABOLITES information.
+    B0 : float [T]
+        Magnetic field for the frequencies calculation.
+    met_slice : int = `15`
+        Number of metabolites to account in the final array. Default is the maximum number of available metabolites, `15`.
+    return_deltas : bool = `False`
+        Whether to return the deltas instead of the frequencies of the metabolites. Default is `False`."""
+    deltas = np.array( list(metabolites.values()) )[:met_slice, 0]
+    t2s = np.array( list(metabolites.values()) )[:met_slice, 1]
+    M_0s = np.array( list(metabolites.values()) )[:met_slice, 2]
+
+    ws = hz_to_rad( f_from_chem_shift(deltas, B0) )
+    if return_deltas == False:
+        return ws, t2s, M_0s
+    else:
+        return deltas, t2s, M_0s
+    
+def setup_sim_t(t0 : float, tn : float, n_points : int, B0 : float, return_extra : bool = False):
+    """Setups the simulation time parameters.
+    
+    Parameters
+    ----------
+    
+    t0 : float  [s]
+        Initial time.
+    tn : float  [s]
+        Final time.
+    n_points : int 
+        Number of points of the simulation.
+    B0 : float  [T]
+        Magnetic file.
+    return_extra : bool = `False`
+        Whether to return the time interval `Dt` and the sampling frequency `sampling_f`. Default is `False`."""
+    Dt = tn - t0
+    dt = (tn - t0)/n_points 
+    sampling_f = 1.0/dt # cycles/s
+    if return_extra == False:
+        return t0, tn, dt, B0
+    else:
+        return t0, tn, dt, B0, Dt, sampling_f
