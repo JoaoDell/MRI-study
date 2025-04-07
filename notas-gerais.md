@@ -12,5 +12,7 @@
 
 2. Validar a tabela anterior. **COMPLETO**
 3. Implementar visualização de comparação entre o sinal simulado, reconstruído e o resíduo (estimado - simulado). **COMPLETO**
-4. Testar variação do $L$ de $700$, $800$, $900$ e $1000$ pontos (valor de corte do svd mais baixo possível). Rodar isso $K$ vezes para ter certeza que os valores da tabela anteriormente implementada não sofrem intereferência de $L$. Rodar primeiro para um K baixo, se houver alguma interferência sequer, rodar para $K$ maiores. **INCOMPLETO**
-5. Testar para a variação do corte no SVD. **INCOMPLETO**
+4. Testar variação do $L$ de $700$, $800$, $900$ e $1000$ pontos (valor de corte do svd mais baixo possível). Rodar isso $K$ vezes para ter certeza que os valores da tabela anteriormente implementada não sofrem intereferência de $L$. Rodar primeiro para um K baixo, se houver alguma interferência sequer, rodar para $K$ maiores. **COMPLETO**
+    - Fazer o cálculo do RMSE para o sinal limpo também.
+5. Testar para a variação do corte no SVD. **COMPLETO**
+6. Testar o L e o corte do SVD em um sinal com ruído. **INCOMPLETO**
