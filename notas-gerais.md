@@ -16,3 +16,5 @@
     - Fazer o cálculo do RMSE para o sinal limpo também.
 5. Testar para a variação do corte no SVD. **COMPLETO**
 6. Testar o L e o corte do SVD em um sinal com ruído. **INCOMPLETO**
+7. Simular um sinal com apenas um pico (nacetylaspartato), rodar o MPM e analisar quais componentes resultaram do algoritmo (omega, amplitude, fase, etc). Gerar o sinal com determinada fase a analisar de novo. Olhar pra componente de interesse do array e as demais (como os valores das demais que em teoria seriam zero se comportam). **INCOMPLETO**
+8. Adicionar ruído baixo no sinal acima e acompanhar a evolução das componentes conforme o ruído aumenta. Aumentar o nível de ruído para entender quantas componentes de valores significativos aparecem. Comparar o sinal original e reconstruído, que apesar de iguais, já não são representados pelos parametros originais. **INCOMPLETO**
