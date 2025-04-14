@@ -428,7 +428,8 @@ def filter_sig(sig : np.ndarray,
                noise_threshold : float, 
                rcond : float = 1e-7,
                zero_filtering : float = 1e-15,
-               return_poles_and_res : bool = False):
+               return_poles_and_res : bool = False,
+               return_full_arrays : bool = False):
     """Filters a signal using the MPM algorithm. Returns the reconstructed and filtered signal as default, 
     but can return the poles and residues if `return_poles_and_res` is set to `True`.
     
@@ -460,7 +461,6 @@ def filter_sig(sig : np.ndarray,
     # below an alternate step that considers the percentage of contribution 
     # of the total eigenvalues and not the singular values (singular values = sqrt(eigenvalues))
     # M = Sigma[Sigma**2/np.sum(Sigma**2) > noise_threshold].size 
-    
     Y_ = np.matmul( np.matmul(U, np.diag(Sigma)[:, :M]), Vt[:M, :] ) # filtered Y
 
     Y2, Y1 = Y_[:,1:], Y_[:,:L_] #Y2, Y1
@@ -471,7 +471,10 @@ def filter_sig(sig : np.ndarray,
 
     # Eigenvalues calculation step
     w = np.linalg.eigvals(A)
-    w = w[np.abs(w.real) > zero_filtering]
+    if return_full_arrays == True:
+      w[np.abs(w.real) <= zero_filtering] = 0 + 1j*0
+    else:
+      w = w[np.abs(w.real) > zero_filtering]
 
     # Residues calculation step
     Zs = np.zeros((N, w.shape[0]), dtype=np.complex128)
@@ -481,7 +484,10 @@ def filter_sig(sig : np.ndarray,
     R = np.linalg.lstsq(Zs, sig, rcond=rcond)[0].astype(np.complex128)
 
     # Zero values filtering
-    R = R[np.abs(R.real) > zero_filtering]
+    if return_full_arrays == True:
+      R[np.abs(R.real) <= zero_filtering] = 0 + 1j*0
+    else:
+      R = R[np.abs(R.real) > zero_filtering]
 
     L_f = R.size
 
@@ -506,20 +512,41 @@ def calculate_variables_from_z_and_r(z : np.complex128, r : np.complex128, ts : 
     r : np.complex128
         Residue value or residues array.
     ts : float
-        Sampling period."""
-    a, b, c, d = z.real, z.imag, r.real, r.imag
-    s0 = np.sqrt(c**2 + d**2)
-    phi = ( + np.pi*(np.logical_and(c < 0, d >= 0)) 
-            - np.pi*(np.logical_and(c < 0, d < 0)) 
-            + (np.pi/2.0)*(np.logical_and(c == 0, d > 0))
-            - (np.pi/2.0)*(np.logical_and(c == 0, d < 0))
-            + np.arctan(d/c)*(c != 0))
-    omega = (1/ts)*(+ np.pi*(np.logical_and(a < 0, b >= 0)) 
-                    - np.pi*(np.logical_and(a < 0, b < 0)) 
-                    + (np.pi/2.0)*(np.logical_and(a == 0, b > 0))
-                    - (np.pi/2.0)*(np.logical_and(a == 0, b < 0))
-                    + np.arctan(b/a)*(a != 0))
-    alpha = -(1/ts)*np.log( np.sqrt( a**2 + b**2 ))
+        Sampling period.
+        
+    Returns
+    -------
+    out : tuple
+      Returns a tuple with the calculated variables arrays in the following order: `s0`, `phi`, `omega`, `alpha`"""
+    # a, b, c, d = z.real, z.imag, r.real, r.imag
+
+    s0 = np.sqrt(r.real**2 + r.imag**2)
+    
+    phi = np.piecewise(r, [r.real > 0,
+                           np.logical_and(r.real < 0, r.imag >= 0), 
+                           np.logical_and(r.real < 0, r.imag < 0),
+                           np.logical_and(r.real == 0, r.imag > 0),
+                           np.logical_and(r.real == 0, r.imag < 0)], 
+                           [lambda x : np.arctan(x.imag/x.real),
+                            lambda x : +np.pi + np.arctan(x.imag/x.real),
+                            lambda x : -np.pi + np.arctan(x.imag/x.real),
+                            lambda x : +np.pi/2.0,
+                            lambda x : -np.pi/2.0]).real
+    omega = (1/ts)*np.piecewise(z, [z.real > 0,
+                                    np.logical_and(z.real < 0, z.imag >= 0), 
+                                    np.logical_and(z.real < 0, z.imag < 0),
+                                    np.logical_and(z.real == 0, z.imag > 0),
+                                    np.logical_and(z.real == 0, z.imag < 0)], 
+                                    [lambda x : np.arctan(x.imag/x.real),
+                                     lambda x : +np.pi + np.arctan(x.imag/x.real),
+                                     lambda x : -np.pi + np.arctan(x.imag/x.real),
+                                     lambda x : +np.pi/2.0,
+                                     lambda x : -np.pi/2.0]).real
+    alpha = np.piecewise(z, [np.logical_or(z.real != 0, z.imag != 0), 
+                             np.logical_and(z.real == 0, z.imag == 0)], 
+                            [lambda x :  (-1/ts)*np.log( np.sqrt( x.real**2 + x.imag**2 )),
+                             lambda x : np.inf*(1 + 1j)]).real 
+    # above it was supposed to be -inf but it messes with the zero so it makes no difference
     return s0, phi, omega, alpha
 
 def unpack_metabolites(metabolites : dict, B0 : float, met_slice : int = 15, return_deltas : bool = False):
