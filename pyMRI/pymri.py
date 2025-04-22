@@ -471,10 +471,12 @@ def filter_sig(sig : np.ndarray,
 
     # Eigenvalues calculation step
     w = np.linalg.eigvals(A)
-    if return_full_arrays == True:
-      w[np.abs(w.real) <= zero_filtering] = 0 + 1j*0
-    else:
-      w = w[np.abs(w.real) > zero_filtering]
+    
+    # Zero values filtering
+    w.real[np.abs(w.real) <= zero_filtering] = 0
+    w.imag[np.abs(w.imag) <= zero_filtering] = 0
+    if return_full_arrays == False:
+      w = w[np.abs(w) > zero_filtering]
 
     # Residues calculation step
     Zs = np.zeros((N, w.shape[0]), dtype=np.complex128)
@@ -484,10 +486,10 @@ def filter_sig(sig : np.ndarray,
     R = np.linalg.lstsq(Zs, sig, rcond=rcond)[0].astype(np.complex128)
 
     # Zero values filtering
-    if return_full_arrays == True:
-      R[np.abs(R.real) <= zero_filtering] = 0 + 1j*0
-    else:
-      R = R[np.abs(R.real) > zero_filtering]
+    R.real[np.abs(R.real) <= zero_filtering] = 0
+    R.imag[np.abs(R.imag) <= zero_filtering] = 0
+    if return_full_arrays == False:
+      R = R[np.abs(R) > zero_filtering]
 
     L_f = R.size
 
@@ -521,27 +523,14 @@ def calculate_variables_from_z_and_r(z : np.complex128, r : np.complex128, ts : 
     # a, b, c, d = z.real, z.imag, r.real, r.imag
 
     s0 = np.sqrt(r.real**2 + r.imag**2)
-    
-    phi = np.piecewise(r, [r.real > 0,
-                           np.logical_and(r.real < 0, r.imag >= 0), 
-                           np.logical_and(r.real < 0, r.imag < 0),
-                           np.logical_and(r.real == 0, r.imag > 0),
-                           np.logical_and(r.real == 0, r.imag < 0)], 
-                           [lambda x : np.arctan(x.imag/x.real),
-                            lambda x : +np.pi + np.arctan(x.imag/x.real),
-                            lambda x : -np.pi + np.arctan(x.imag/x.real),
-                            lambda x : +np.pi/2.0,
-                            lambda x : -np.pi/2.0]).real
-    omega = (1/ts)*np.piecewise(z, [z.real > 0,
-                                    np.logical_and(z.real < 0, z.imag >= 0), 
-                                    np.logical_and(z.real < 0, z.imag < 0),
-                                    np.logical_and(z.real == 0, z.imag > 0),
-                                    np.logical_and(z.real == 0, z.imag < 0)], 
-                                    [lambda x : np.arctan(x.imag/x.real),
-                                     lambda x : +np.pi + np.arctan(x.imag/x.real),
-                                     lambda x : -np.pi + np.arctan(x.imag/x.real),
-                                     lambda x : +np.pi/2.0,
-                                     lambda x : -np.pi/2.0]).real
+    phi = np.piecewise(r, [np.arctan2(r.imag, r.real) >= 0, 
+                           np.arctan2(r.imag, r.real) < 0], 
+                          [lambda x : np.arctan2(x.imag, x.real),
+                           lambda x : np.arctan2(x.imag, x.real) + 2*np.pi]).real
+    omega = (1/ts)*np.piecewise(z, [np.arctan2(z.imag, z.real) >= 0, 
+                                    np.arctan2(z.imag, z.real) < 0], 
+                                   [lambda x : np.arctan2(x.imag, x.real),
+                                    lambda x : np.arctan2(x.imag, x.real) + 2*np.pi]).real
     alpha = np.piecewise(z, [np.logical_or(z.real != 0, z.imag != 0), 
                              np.logical_and(z.real == 0, z.imag == 0)], 
                             [lambda x :  (-1/ts)*np.log( np.sqrt( x.real**2 + x.imag**2 )),
