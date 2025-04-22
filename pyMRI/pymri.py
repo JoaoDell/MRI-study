@@ -365,33 +365,38 @@ def plot_chem_shifts(freqs : np.ndarray,
                      xlabel : str = "δ (p.p.m.)",
                      ylabel : str = "Intensity (A.U.)",
                      c : str = "deeppink",
-                     label : str = None): 
+                     label : str = None,
+                     plot_type : Literal["real", "imag", "abs"] = "abs"): 
     """Plots a given spectrum in terms of its chemical shifts.
     
     Parameters
     ----------
     freqs : np.ndarray
-    Frequencies array.
+      Frequencies array.
     sig_fft : np.ndarray
-    Signal spectrum array.
+      Signal spectrum array.
     percentage : float (0.0, 1.0]
-    Percentage of the signal to be displayed.
+      Percentage of the signal to be displayed.
     title : str = `"Simulated MRS Spectra"`
-    Title of the plot.
+      Title of the plot.
     xlabel : str = `"δ (p.p.m.)"`
-    X-label of the plot.
+      X-label of the plot.
     ylabel : str = `"Intensity (A.U.)"`
-    y-label of the plot.
+      y-label of the plot.
     c : str = `"deeppink"`
-    Matplotlib color of the plot.
+      Matplotlib color of the plot.
     label : str = `None`
-    Label of the plot"""
+      Label of the plot
+    plot_type : Literal["real", "imag", "abs"] = `abs`
+      Whether to plot the real, imaginary or absolute value of the array."""
     plot_freqs = freqs[freqs.size//2:] # +1 excludes de 0 frequency
     plot_sig_fft = sig_fft[sig_fft.size//2:]
 
     b = int(percentage*plot_freqs.size)
 
-    plt.plot(plot_freqs[:b], np.abs(plot_sig_fft)[:b], c = c, label = label)
+    _types = { "real" : np.real, "imag" : np.imag, "abs" : np.abs}
+    
+    plt.plot(plot_freqs[:b], _types[plot_type](plot_sig_fft)[:b], c = c, label = label)
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
@@ -471,7 +476,7 @@ def filter_sig(sig : np.ndarray,
 
     # Eigenvalues calculation step
     w = np.linalg.eigvals(A)
-    
+
     # Zero values filtering
     w.real[np.abs(w.real) <= zero_filtering] = 0
     w.imag[np.abs(w.imag) <= zero_filtering] = 0
