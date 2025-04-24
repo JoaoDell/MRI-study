@@ -105,7 +105,7 @@ def population_transverse_decay(t0 : float,
                                 tn : float, 
                                 dt : float, 
                                 population : tuple,  
-                                echo : np.ndarray,
+                                echo : np.ndarray = np.array([]),
                                 return_phase : bool = False):
   """Simulates the transverse decay of the magnetization of a population of spins. 
   Echoes before and after t0 and tn are filtered out.
@@ -125,7 +125,9 @@ def population_transverse_decay(t0 : float,
       3. Initial magnetization value of each spin.      [T]
       4. Initial phase of each spin.                    [rad]
     echo : np.ndarray (M, 1)
-      Echoes times to be applied to the simulation."""
+      Echoes times to be applied to the simulation.
+    return_phase : bool = `False`
+      Whether to return the phases or not. Default is `False`."""
 
   w, T2, M_0, phi = population
 
@@ -389,7 +391,7 @@ def plot_chem_shifts(freqs : np.ndarray,
       Label of the plot
     plot_type : Literal["real", "imag", "abs"] = `abs`
       Whether to plot the real, imaginary or absolute value of the array."""
-    plot_freqs = freqs[freqs.size//2:] # +1 excludes de 0 frequency
+    plot_freqs = freqs[freqs.size//2:]
     plot_sig_fft = sig_fft[sig_fft.size//2:]
 
     b = int(percentage*plot_freqs.size)
