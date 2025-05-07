@@ -35,6 +35,16 @@ METABOLITES = {"gaba"                   : (1.9346,   19.9*1e-3, 0.2917), # (δ, 
                "cr2"                    : (3.9512,   40.0*1e-3, 0.2991),
                "cho+m-ins"              : (4.1233,    8.8*1e-3, 0.8244)}
 
+# The below was calculated in ..\examples\sigma_relations.ipynb
+A = 0.4935147915609802
+STD_A = 0.00234223322864983
+C = 0.3059269851116157
+STD_C = 0.0019239898238883272
+D = 1.1590522266759649
+STD_D = 0.00010226500977286893
+E = -1.0029749238349337
+STD_E = 0.032606022203370645
+
 def single_transverse_decay(t : np.ndarray, 
                             T2 : float,  
                             M_0: float, 
@@ -455,7 +465,10 @@ def filter_sig(sig : np.ndarray,
         Default is set to `1e-7`.
     return_poles_and_res : bool = `False`
         Whether to return or not the poles and residues. If True, will return the reconstructed signal, 
-        the poles and residues in a tuple."""
+        the poles and residues in a tuple.
+    return_full_arrays : bool = `False`
+      Whether to return the full arrays or sliced where the values are near-zero, delimited by the `noise_threshold` variable. 
+      Default is `False`."""
     # Matrix Y generation step
     N = sig.size
     L_ = int(L*N)
@@ -591,3 +604,59 @@ def setup_sim_t(t0 : float, tn : float, n_points : int, B0 : float, return_extra
         return t0, tn, dt, B0
     else:
         return t0, tn, dt, B0, Dt, sampling_f
+    
+
+def snr_to_sigma(snr : float):
+    """Returns a sigma value that will approximately corresponds to a given SNR value.
+    
+    Parameters
+    ----------
+    
+    snr : float
+        Desired SNR value.
+    expected_peak : float
+        The signal's expected peak."""
+    actual_snr = (snr - E)/D # Linear correction (inverse of the linear function)
+    given_sigma = 1.0/actual_snr
+
+    b = np.log(A)
+    return (b - np.log(A - given_sigma))/C # inverse of the model function
+
+def select_peaks(s0 : np.ndarray,
+                 phi : np.ndarray,
+                 omega : np.ndarray,
+                 t2 : np.ndarray, 
+                 percentage : float = 0.05):
+    """Calculates the peaks to be individually analysed, based on the highest peak value of `s0`. 
+    Peaks below `percentage*highest_peak` will be discarded.
+    
+    Parameters
+    ----------
+    s0 : np.ndarray
+        Peaks array.
+    phi : np.ndarray
+        Phases array.
+    omega : np.ndarray
+        Frequencies array.
+    t2 : np.ndarray
+        Decaying time T_2 array.
+    percentage : float = `0.1`
+        The percentage of the peak that will be used to filter. Default is `0.1`."""
+    
+    sort_arr = np.argsort(s0)
+
+    s0_ = s0[sort_arr]
+    phi_ = phi[sort_arr]
+    omega_ = omega[sort_arr]
+    t2_ = t2[sort_arr]
+
+    peak = s0_[-1]
+
+    s0__ = s0_[s0_ >= percentage*peak]
+    phi__ = phi_[s0_ >= percentage*peak]
+    omega__ = omega_[s0_ >= percentage*peak]
+    t2__ = t2_[s0_ >= percentage*peak]
+
+    n_comp = s0__.size
+
+    return s0__, phi__, omega__, t2__, n_comp
