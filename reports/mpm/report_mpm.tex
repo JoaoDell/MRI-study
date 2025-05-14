@@ -1,0 +1,154 @@
+%start by defining the document class
+\documentclass[12pt]{article}
+
+%below the package used for hyperlinking
+\usepackage[a4paper, top=2.3cm, bottom=2.3cm, left=2.3cm, right=2.3cm]{geometry}
+\usepackage{graphicx}	
+\usepackage[brazil]{babel}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{amsfonts} 
+\usepackage{amsmath}
+\usepackage[brazil]{babel}
+\graphicspath{ {../images/} }
+
+\linespread{1.5}
+\setlength{\parindent}{1.3cm}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \vspace*{1cm}
+            
+        \Huge
+        \textbf{Simulação de Sinais Cerebrais de Espectroscopia por 
+        Ressonância Magnética}
+            
+        \vspace{0.5cm}
+        \LARGE
+        Da Criação à Corrupção (Por Ruído)
+            
+        \vspace{1.5cm}
+            
+        \textbf{João Victor Dell Agli Floriano \\ Fernando Fernandes Paiva}
+
+            
+        \vfill
+            
+        \textbf{Curso:} Mestrado \\
+        \textbf{Período a que se refere:} 02/2024 a 12/2024
+            
+        \vspace{0.8cm}
+            
+        \Large
+        \textbf{Bolsa de Estudos:} CAPES \\
+        \textbf{Período de Vigência:} 01/08/2024 a 28/02/2026 (19 meses)
+            
+    \end{center}
+\end{titlepage}
+
+%inserting the title defined above
+
+\section{Resumo}
+
+\section{Introdução}
+
+\begin{enumerate}
+    \item Implementação do MPM sem ruído
+    \item Implementação do MPM com ruído
+    \item Separação de variáveis (s0, phi, omega, T2)
+    \item Testagem do L sem ruído
+    \item Testagem do SVD sem ruído
+    \item Testagem do L com ruído
+    \item Testagem do SVD com ruído
+    \item Testagem do comportamento das variáveis separadas com a introdução de ruído de valores de sigma variados
+\end{enumerate}
+
+O método de "lápis de matrizes", do inglês \textit{Matrix Pencil Method} (MPM) é uma técnica numérica
+de estimativa de parâmetros de sinais, desenvolvido originalmente por Yingbo Hua e Tapan Sakar \cite{370583} como uma alternativa a métodos já existentes 
+como o de Prony \cite{49090}. O método consiste em modelar os sinais como uma soma de exponenciais complexas amortecidas, como na \autoref{eq:1}. Partindo 
+dessa ideia, é então aplicada uma série de etapas, que inclui a utilização de outros métodos, como Decomposição em Valores Singulares (SVD, do inglês \textit{Singular Value Decomposition}), 
+para estimar os parâmteros dessa função modeladora.  
+
+\begin{equation} \label{eq:1}
+    y(n) = \sum_{k=1}^{M} R_k e^{i (\omega_k t + \phi_k) + \alpha_k }
+\end{equation}
+
+\section{Métodos}
+
+Desenvolvido por Yingbo Hua e Tapan Sakar \cite{370583}, a implementação do MPM em seu trabalho é descrita originalmente de duas maneiras: a sem ruído, 
+implementada de maneira mais simplificada; e a que leva em conta a presença de ruído, que utiliza algoritmos mais complexos em sua implementação, como a
+Decomposição em Valores Singulares (SVD, do inglês \textit{Singular Value Decomposition}).
+
+\subsection{Caso sem ruído}
+
+Para o caso sem ruído, define-se duas matrizes $(N-L) \times L$, $Y_1$ e $Y_2$, descritas pela \autoref{eq:2} e \autoref{eq:3}.
+
+\begin{equation} \label{eq:2}
+    Y_2 = \begin{bmatrix} x(1) & x(2) & \dots & x(L) \\
+                            x(2) & x(3) & \dots & x(L + 1) \\
+                            \vdots & \vdots & & \vdots \\
+                            x(N-L) & x(N - L + 1) & \dots & x(N-1) \\
+    \end{bmatrix}
+\end{equation}
+
+\begin{equation} \label{eq:3}
+    Y_1 = \begin{bmatrix} x(0) & x(1) & \dots & x(L-1) \\
+                            x(1) & x(2) & \dots & x(L) \\
+                            \vdots & \vdots & & \vdots \\
+                            x(N - L - 1) & x(N - L) & \dots & x(N-2) \\
+    \end{bmatrix}
+\end{equation}
+
+Sendo $L$ o parâmetro de \textit{pencil}, que, em etapas posteriores, se mostra eficiente em eliminar alguns dos efeitos do ruído nos dados.
+
+É possível escrever $Y_1$ e $Y_2$ como:
+\begin{equation} 
+    Y_2 = Z_1 R Z_0 Z_2
+\end{equation}
+
+e
+
+\begin{equation}
+    Y_1 = Z_1 R Z_2
+\end{equation}
+
+Sendo:
+\begin{equation}
+    Z_1 = \begin{bmatrix} 1 & 1 & \dots & 1 \\
+                            z_1 & z_2 & \dots & z_M \\
+                            \vdots & \vdots & & \vdots \\
+                            z_1^{N - L - 1} & z_2^{N - L - 1} & \dots & z_M^{N - L - 1} 
+    \end{bmatrix}  
+\end{equation}
+
+\begin{equation}
+    Z_2 = \begin{bmatrix} 1 & z_1 & \dots & z_1^{L-1} \\
+                            1 & z_2 & \dots & z_2^{L-1} \\
+                            \vdots & \vdots & & \vdots \\
+                            1 & z_M & \dots & z_M^{L-1} \\
+    \end{bmatrix}
+\end{equation}
+
+\begin{equation}
+    Z_0 = diag(z_1, z_2, \dots, z_M)
+\end{equation}
+
+E, por fim:
+
+\begin{equation}
+    R = diag(R_1, R_2, \dots, R_M)
+\end{equation}
+
+\section{Resultados}
+
+\section{Conclusão}
+
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+
+%nding the document
+\end{document}
