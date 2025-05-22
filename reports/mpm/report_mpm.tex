@@ -55,6 +55,7 @@
 \section{Introdução}
 
 \begin{enumerate}
+    \item Descrever o que é "pencil"
     \item Implementação do MPM sem ruído
     \item Implementação do MPM com ruído
     \item Separação de variáveis (s0, phi, omega, T2)
@@ -65,11 +66,24 @@
     \item Testagem do comportamento das variáveis separadas com a introdução de ruído de valores de sigma variados
 \end{enumerate}
 
-O método de "lápis de matrizes", do inglês \textit{Matrix Pencil Method} (MPM) é uma técnica numérica
+O termo "lápis" (do inglês \textit{pencil}), cunhado por Grantmatcher \cite{} no contexto de \textit{pencil} de matrizes, é uma ferramenta que combina matrizes 
+quadradas linearmente a partir de um parâmtero $\lambda$, como descrito pela \autoref{eq:19}. $l$ é um inteiro não-negativo.
+
+\begin{equation} \label{eq:19}
+    L(\lambda) = \sum_{i = 0}^{l} \lambda^i A_i
+\end{equation}
+
+No contexto de \textit{pencil} de funções, $f(t, \lambda)$ é \textit{pencil} de $g(t)$ e $h(t)$ quando segue o formato descrito pela \autoref{eq:20}.
+
+\begin{equation} \label{eq:20}
+    f(t, \lambda) = g(t) + \lambda h(t)
+\end{equation}
+
+O método "lápis de matrizes", do inglês \textit{Matrix Pencil Method} (MPM) é uma técnica numérica
 de estimativa de parâmetros de sinais, desenvolvido originalmente por Yingbo Hua e Tapan Sakar \cite{370583} como uma alternativa a métodos já existentes 
-como o de Prony \cite{49090}. O método consiste em modelar os sinais como uma soma de exponenciais complexas amortecidas, como na \autoref{eq:1}. Partindo 
+como o de Prony \cite{49090}. O mesmo consiste em modelar os sinais como uma soma de exponenciais complexas amortecidas, como na \autoref{eq:1}. Partindo 
 dessa ideia, é então aplicada uma série de etapas, que inclui a utilização de outros métodos, como Decomposição em Valores Singulares (SVD, do inglês \textit{Singular Value Decomposition}), 
-para estimar os parâmteros dessa função modeladora.  
+para estimar os parâmetros dessa função modeladora.  
 
 \begin{equation} \label{eq:1}
     y(n) = \sum_{k=1}^{M} R_k e^{i (\omega_k t + \phi_k) + \alpha_k }
@@ -77,13 +91,12 @@ para estimar os parâmteros dessa função modeladora.
 
 \section{Métodos}
 
-Desenvolvido por Yingbo Hua e Tapan Sakar \cite{370583}, a implementação do MPM em seu trabalho é descrita originalmente de duas maneiras: a sem ruído, 
-implementada de maneira mais simplificada; e a que leva em conta a presença de ruído, que utiliza algoritmos mais complexos em sua implementação, como a
+A implementação do MPM em seu trabalho original é descrita originalmente de duas maneiras: a sem ruído, 
+implementada de maneira mais simplificada; e a que leva em conta a presença de ruído, que utiliza algoritmos mais complexos, como a
 Decomposição em Valores Singulares (SVD, do inglês \textit{Singular Value Decomposition}).
 
 \subsection{Caso sem ruído}
-
-Para o caso sem ruído, define-se duas matrizes $(N-L) \times L$, $Y_1$ e $Y_2$, descritas pela \autoref{eq:2} e \autoref{eq:3}.
+Assumindo um sinal $x$ de tamanho $N$, para o caso sem ruído, define-se duas matrizes $(N-L) \times L$, $Y_1$ e $Y_2$, descritas pela \autoref{eq:2} e \autoref{eq:3}.
 
 \begin{equation} \label{eq:2}
     Y_2 = \begin{bmatrix} x(1) & x(2) & \dots & x(L) \\
@@ -101,21 +114,17 @@ Para o caso sem ruído, define-se duas matrizes $(N-L) \times L$, $Y_1$ e $Y_2$,
     \end{bmatrix}
 \end{equation}
 
-Sendo $L$ o parâmetro de \textit{pencil}, que, em etapas posteriores, se mostra eficiente em eliminar alguns dos efeitos do ruído nos dados.
-
-É possível escrever $Y_1$ e $Y_2$ como:
-\begin{equation} 
+Sendo $L$ o parâmetro de \textit{pencil}, importante para etapas posteriores. É possível escrever $Y_1$ e $Y_2$ como a \autoref{eq:4} e a \autoref{eq:5}, sendo $Z_1$ descrito pela \autoref{eq:6}, $Z_2$ descrito pela \autoref{eq:7}, $Z_0$ 
+descrito pela \autoref{eq:8}, e enfim $R$, descrito pela \autoref{eq:9}. Por enquanto, o parâmetro $M$ pode ser considerado como igual a $N$, porém virá a assumir valores diferentes posteriormente.
+\begin{equation} \label{eq:4}
     Y_2 = Z_1 R Z_0 Z_2
 \end{equation}
 
-e
-
-\begin{equation}
+\begin{equation} \label{eq:5}
     Y_1 = Z_1 R Z_2
 \end{equation}
 
-Sendo:
-\begin{equation}
+\begin{equation} \label{eq:6}
     Z_1 = \begin{bmatrix} 1 & 1 & \dots & 1 \\
                             z_1 & z_2 & \dots & z_M \\
                             \vdots & \vdots & & \vdots \\
@@ -123,7 +132,7 @@ Sendo:
     \end{bmatrix}  
 \end{equation}
 
-\begin{equation}
+\begin{equation} \label{eq:7}
     Z_2 = \begin{bmatrix} 1 & z_1 & \dots & z_1^{L-1} \\
                             1 & z_2 & \dots & z_2^{L-1} \\
                             \vdots & \vdots & & \vdots \\
@@ -131,15 +140,169 @@ Sendo:
     \end{bmatrix}
 \end{equation}
 
-\begin{equation}
+\begin{equation} \label{eq:8}
     Z_0 = diag(z_1, z_2, \dots, z_M)
 \end{equation}
 
-E, por fim:
-
-\begin{equation}
+\begin{equation} \label{eq:9}
     R = diag(R_1, R_2, \dots, R_M)
 \end{equation}
+
+Considerando agora o \textit{pencil}, descrito pela \autoref{eq:10}: Reescrevendo-o a partir da \autoref{eq:4} e da \autoref{eq:5}, obtém-se a \autoref{eq:11}, que, reorganizada, 
+rende a \autoref{eq:12}.
+
+\begin{equation} \label{eq:10}
+    Y_2 - \lambda Y_1
+\end{equation}
+
+\begin{equation} \label{eq:11}
+    Y_2 - \lambda Y_1 = Z_1 R Z_0 Z_2 - \lambda Z_1 R Z_2
+\end{equation}
+
+\begin{equation} \label{eq:12}
+    Y_2 - \lambda Y_1 = Z_1 R (Z_0 - \lambda I) Z_2
+\end{equation}
+
+Considerando $\lambda = z_i$, a matriz $Z_0 - \lambda I$ é zero, fazendo com que o \textit{pencil} seja igual a zero, transformando o problema é um problema de autovalores generalizados. 
+Encontrando os autovalores generalizados do par $\{Y_1, Y_2\}$, encontra-se os polos $z_i$. É possível também encontrar $z_i$ como resultado do problema de autovalores comuns da matriz $Y_1^+ Y_2$, como na
+\autoref{eq:13}. $Y_1^+$, a matriz pseudoinversa de Moore-Penrose de $Y_1$, é definida pela \autoref{eq:14}, no qual $H$ denota o conjugado transposto. 
+
+\begin{equation} \label{eq:13}
+    Y_1^+ Y_2 - \lambda I = 0
+\end{equation}
+
+\begin{equation} \label{eq:14}
+    Y_1^+= (Y_1^H Y_1)^{-1}Y_1^H
+\end{equation}
+
+Encontrados os polos $z_i$, basta encontrar os resíduos $R_i$ a partir de um problema de mínimos quadrados, descritos pela \autoref{eq:15}.
+
+\begin{equation} \label{eq:15}
+    \begin{bmatrix} y(0) \\
+    y(1) \\
+    \vdots \\
+    y(N-1)
+    \end{bmatrix} = 
+    \begin{bmatrix} 1 & 1 & \dots & 1 \\
+    z_1 & z_2 & \dots & z_M \\
+    \vdots & \vdots & \dots & \vdots \\
+    z_1^{N-1} & z_2^{N-1} & \dots & z_M^{N-1}
+    \end{bmatrix} \cdot 
+    \begin{bmatrix}
+    R_1 \\
+    R_2 \\
+    \vdots \\
+    R_{M}
+    \end{bmatrix}
+\end{equation}
+
+\subsection{Caso com ruído}
+
+No caso com ruído, é construída a matriz generalizada $Y$, descrita pela \autoref{eq:16}, da qual é possível extrair $Y_1$ e $Y_2$ deletando a 
+última e a primeira coluna, respectivamente. 
+
+\begin{equation} \label{eq:16}
+    Y = \begin{bmatrix} y(0) &y(1) & y(2) & \dots & y(L) \\
+                        y(1) & y(2) & y(3) & \dots & y(L + 1) \\
+                        \vdots & \vdots & \vdots & & \vdots \\
+                        y(N - L -1) & y(N-L) & y(N - L + 1) & \dots & y(N-1) \\
+    \end{bmatrix}
+\end{equation}
+
+Como citado anteriormente, o parâmtero $L$ viria a ser importante para filtragem do ruído, sendo escolhido entre $N/3$ e $N/2$, intervalo no qual 
+a variância dos parâmetros $z_i$ por conta do ruído apresentou-se como mínima \cite{370583}.
+
+Após a construção, aplica-se uma decomposição em Valores Singulares (SVD) nessa matriz. 
+
+\begin{equation} \label{eq:17}
+    Y = U \Sigma V^H
+\end{equation}
+
+A qual a matriz $U$, a matriz de vetores singulares à esquerda, contém os autovetores da matriz $YY^H$. $V$, chamada de matriz de vetores singulares 
+à direita, contém os autovetores da matriz $Y^HY$, e $\Sigma$, a matriz diagonal de valores singulares, contém os autovalores tanto de $YY^H$ e $Y^HY$.
+
+Encontradas as submatrizes, o número M de polos a serem calculados é escolhido, sendo eles os M autovalores de $\Sigma$ que mais contribuem para a matriz final. 
+A sugestão de exclusão segue a \autoref{eq:18}, sendo $\sigma_c$ o valor singular analisado, $\sigma _{max}$ o maior valor singular e $p$ o número de algarismos significativos. 
+A partir disso, é possível filtrar os autovalores, separando os mais significativos de ruído.
+\begin{equation} \label{eq:18}
+    \frac{\sigma_c}{\sigma _{max}} = 10^{-p}
+\end{equation}
+
+Encontrado o valor singular limite de filtragem, a matriz $Y'$ é construída a partir de $Y$ com menos valores singulares, e a partir dela, $Y_1'$ e $Y_2'$ são derivadas. Realizada essa etapa, 
+basta calcular os autovalores generalizados do par $\{Y_2', Y_1'\}$, ou o autovalor da matriz $Y_1'^+Y_2'$, e os resíduos $R_i$, seguindo o procedimento descrito anteriormente,
+concluindo o processo do MPM. O sinal pode ser reconstruído com os polos $z_i$ e resíduos $R_i$ pela \autoref{eq:21}.
+
+\begin{equation} \label{eq:21}
+    y(kT_s) \approx \sum_{i = 1}^{M}R_i z_i^{k}, \ \ k = 0,...,N-1
+\end{equation}
+
+O algoritmo do MPM pode ser resumido então pelas seguintes etapas:
+
+\begin{enumerate} \label{en:1}
+    \item Calcular a matriz $Y$.
+    \item Calcular a SVD de $Y$.
+    \item Filtrar os valores singulares de acordo com o critério de seleção da \autoref{eq:18}.
+    \item Reconstruir a matriz filtrada $Y'$.
+    \item Obter $Y_1'$ e $Y_2'$ a partir de $Y'$.
+    \item Calcular os autovalores generalizados do par $\{Y_2', Y_1'\}$ ou calcular os autovalores da matriz $Y_1'^+Y_2'$.
+    \item Encontrar os resíduos por meio do problema de mínimos quadrados descrita pela \autoref{eq:15}.
+\end{enumerate}
+
+Essas etapas foram traduzidas em um algoritmo na linguagem \textit{python}, implementado em uma biblioteca própria customizada. Para sua implementação, 
+foram usadas funções já prontas da biblioteca \textit{numpy}, como a função para o cálculo da pseudoinversa de Moore-Penrose, cálculo de autovalores e de resolução de 
+mínimos quadrados. É importante ressaltar que, por se tratar de um algoritmo com características numéricas em múltiplas etapas, algumas adaptações e 
+aproximações foram feitas de maneira a viabilizar seu funcionamento. Foi necessário aproximar valores de saída dos cálculos dos polos $z_i$ e resíduos 
+$R_i$ para zero em casos os quais seus valores calculados eram significativamente baixos. Essa aproximação foi feita a partir de um valor limite, definido 
+a critérios do usuário, para o qual valores abaixo ou igual ao valor limite eram truncados. Além disso, para as funções externas, foi necessário se atentar 
+ao seus parâmetros próprios de filtro, usados em etapas intermediárias de cálculos que utilizam o SVD. Nesse último caso, foi definido como filtro de corte o 
+valor de $1^{-7}$.
+
+\subsection{Separação de variáveis}
+
+Com o intuito de melhorar o controle e entendimento dos parâmetros calculados pelo MPM, foi feita uma correspondência entre os polos $z_i$ e resíduos $R_i$ com
+os parâmetros originais que compõe o sinal, nesse caso, $S_{0, i}$, $\phi_i$, $\omega_i$ e $T_{2, i}$. Considerando que um sinal de MRS pode ser representado pela 
+\autoref{eq:22}, sua versão discreta pode ser escrita assumindo $t = kT_S$, sendo $T_s$ o período de \textit{sampling} do sinal, e $k$ um inteiro representando o 
+passo, como na \autoref{eq:23}.
+
+\begin{equation} \label{eq:22}
+    S = \sum_{i=1}^{M} S_{0, i} e^{j\omega_i t -\frac{t}{T_2}}e^{j \phi_i} 
+\end{equation}
+
+\begin{equation} \label{eq:23}
+    S = \sum_{i=1}^{M} S_{0, i} e^{j \phi_i}  (e^{j\omega_i T_s -\frac{T_s}{T_2}})^k 
+\end{equation}
+
+Considerando que a aproximação feita por meio da \autoref{eq:21} é uma representação correta do sinal, é possível estabelecer uma equivalência 
+entre os parâmetros originais e calculados, a partir da \autoref{eq:24}.
+
+\begin{equation} \label{eq:24}
+    \sum_{i=1}^{M} S_{0, i} e^{j \phi_i}  (e^{j\omega_i T_s -\frac{T_s}{T_2}})^k  = \sum_{i = 1}^{M} R_i z_i^{k}
+\end{equation}
+
+Essa equivalência demonstra que enquanto os polos $z_i$ representam $e^{j\omega_i T_s} e^{-\frac{T_s}{T_2}}$, os resíduos representam a multiplicação 
+$S_{0, i} e^{j \phi_i}$. Considerando a representação polar de um número complexo, na \autoref{eq:25}, é possível visualizar uma maneira simples de 
+cálculo dos parâmetros originais a partir de $z_i$ e $R_i$, concluindo que $e^{-\frac{T_s}{T_2}}$ corresponde ao módulo de $z$, $\omega_i T_s$ ao argumento de $z$,
+$S_{0, i}$ ao módulo de $R$, e $\phi_i$ ao argumento de $R$. A \autoref{tab:1} reúne as equivalências resultantes.
+
+\begin{equation} \label{eq:25}
+    z = A e^{j \theta}    
+\end{equation}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        $S_0$ & $\phi$ & $\omega$ & $T_2$ \\ 
+        \hline
+        $|R|$ & $arg(R)$ & $-\frac{1}{T_s} arg(z)$ & $-\frac{T_s}{\log(|z|)}$ \\
+        \hline
+    \end{tabular}
+    \caption{Relação entre os parâmetros calculados e originais.}
+    \label{tab:1}
+\end{table}
+
+
+
 
 \section{Resultados}
 
