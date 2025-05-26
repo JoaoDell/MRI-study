@@ -378,7 +378,8 @@ def plot_chem_shifts(freqs : np.ndarray,
                      ylabel : str = "Intensity (A.U.)",
                      c : str = "deeppink",
                      label : str = None,
-                     plot_type : Literal["real", "imag", "abs"] = "abs"): 
+                     plot_type : Literal["real", "imag", "abs"] = "abs",
+                     linewidth = None): 
     """Plots a given spectrum in terms of its chemical shifts.
     
     Parameters
@@ -408,7 +409,7 @@ def plot_chem_shifts(freqs : np.ndarray,
 
     _types = { "real" : np.real, "imag" : np.imag, "abs" : np.abs}
     
-    plt.plot(plot_freqs[:b], _types[plot_type](plot_sig_fft)[:b], c = c, label = label)
+    plt.plot(plot_freqs[:b], _types[plot_type](plot_sig_fft)[:b], c = c, label = label, linewidth = linewidth)
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
