@@ -37,7 +37,7 @@
         \vfill
             
         \textbf{Curso:} Mestrado \\
-        \textbf{Período a que se refere:} 02/2024 a 12/2024
+        \textbf{Período a que se refere:} 02/2025 a 05/2025
             
         \vspace{0.8cm}
             
@@ -52,8 +52,6 @@
 
 \section{Resumo}
 
-\section{Introdução}
-
 \begin{enumerate}
     \item Descrever o que é "pencil"
     \item Implementação do MPM sem ruído
@@ -65,6 +63,8 @@
     \item Testagem do SVD com ruído
     \item Testagem do comportamento das variáveis separadas com a introdução de ruído de valores de sigma variados
 \end{enumerate}
+
+\section{Introdução}
 
 O termo "lápis" (do inglês \textit{pencil}), cunhado por Grantmatcher \cite{} no contexto de \textit{pencil} de matrizes, é uma ferramenta que combina matrizes 
 quadradas linearmente a partir de um parâmtero $\lambda$, como descrito pela \autoref{eq:19}. $l$ é um inteiro não-negativo.
@@ -163,7 +163,7 @@ rende a \autoref{eq:12}.
     Y_2 - \lambda Y_1 = Z_1 R (Z_0 - \lambda I) Z_2
 \end{equation}
 
-Considerando $\lambda = z_i$, a matriz $Z_0 - \lambda I$ é zero, fazendo com que o \textit{pencil} seja igual a zero, transformando o problema é um problema de autovalores generalizados. 
+Escolhendo $\lambda = z_i$ de maneira intencional, a matriz $Z_0 - \lambda I$ é zero, fazendo com que o \textit{pencil} seja igual a zero, transformando o problema em um problema de autovalores generalizados. 
 Encontrando os autovalores generalizados do par $\{Y_1, Y_2\}$, encontra-se os polos $z_i$. É possível também encontrar $z_i$ como resultado do problema de autovalores comuns da matriz $Y_1^+ Y_2$, como na
 \autoref{eq:13}. $Y_1^+$, a matriz pseudoinversa de Moore-Penrose de $Y_1$, é definida pela \autoref{eq:14}, no qual $H$ denota o conjugado transposto. 
 
@@ -198,7 +198,7 @@ Encontrados os polos $z_i$, basta encontrar os resíduos $R_i$ a partir de um pr
 
 \subsection{Caso com ruído}
 
-No caso com ruído, é construída a matriz generalizada $Y$, descrita pela \autoref{eq:16}, da qual é possível extrair $Y_1$ e $Y_2$ deletando a 
+No caso com ruído, é construída a matriz generalizada $Y$, descrita pela \autoref{eq:16}, da qual é possível extrair $Y_1$ e $Y_2$ excluindo a 
 última e a primeira coluna, respectivamente. 
 
 \begin{equation} \label{eq:16}
@@ -210,7 +210,7 @@ No caso com ruído, é construída a matriz generalizada $Y$, descrita pela \aut
 \end{equation}
 
 Como citado anteriormente, o parâmtero $L$ viria a ser importante para filtragem do ruído, sendo escolhido entre $N/3$ e $N/2$, intervalo no qual 
-a variância dos parâmetros $z_i$ por conta do ruído apresentou-se como mínima \cite{370583}.
+a variância dos parâmetros $z_i$, por conta do ruído, apresentou-se como mínima \cite{370583}.
 
 Após a construção, aplica-se uma decomposição em Valores Singulares (SVD) nessa matriz. 
 
@@ -219,13 +219,13 @@ Após a construção, aplica-se uma decomposição em Valores Singulares (SVD) n
 \end{equation}
 
 A qual a matriz $U$, a matriz de vetores singulares à esquerda, contém os autovetores da matriz $YY^H$. $V$, chamada de matriz de vetores singulares 
-à direita, contém os autovetores da matriz $Y^HY$, e $\Sigma$, a matriz diagonal de valores singulares, contém os autovalores tanto de $YY^H$ e $Y^HY$.
+à direita, contém os autovetores da matriz $Y^HY$, e $\Sigma$, a matriz diagonal de valores singulares, contém os valores singulares de $YY^H$ e $Y^HY$.
 
-Encontradas as submatrizes, o número M de polos a serem calculados é escolhido, sendo eles os M autovalores de $\Sigma$ que mais contribuem para a matriz final. 
-A sugestão de exclusão segue a \autoref{eq:18}, sendo $\sigma_c$ o valor singular analisado, $\sigma _{max}$ o maior valor singular e $p$ o número de algarismos significativos. 
+Encontradas as submatrizes, o número M de polos a serem calculados é escolhido, sendo eles os M valores singulares de $\Sigma$ que mais contribuem para a matriz final. 
+A sugestão de exclusão segue a \autoref{eq:18}, sendo $\sigma_c$ o valor singular analisado, $\sigma _{max}$ o maior valor singular e $p$ a ordem do número de algarismos significativos. 
 A partir disso, é possível filtrar os autovalores, separando os mais significativos de ruído.
 \begin{equation} \label{eq:18}
-    \frac{\sigma_c}{\sigma _{max}} = 10^{-p}
+    \frac{\sigma_c}{\sigma _{max}} > 10^{-p}
 \end{equation}
 
 Encontrado o valor singular limite de filtragem, a matriz $Y'$ é construída a partir de $Y$ com menos valores singulares, e a partir dela, $Y_1'$ e $Y_2'$ são derivadas. Realizada essa etapa, 
@@ -236,7 +236,7 @@ concluindo o processo do MPM. O sinal pode ser reconstruído com os polos $z_i$ 
     y(kT_s) \approx \sum_{i = 1}^{M}R_i z_i^{k}, \ \ k = 0,...,N-1
 \end{equation}
 
-O algoritmo do MPM pode ser resumido então pelas seguintes etapas:
+O algoritmo do MPM pode ser resumido, então, pelas seguintes etapas:
 
 \begin{enumerate} \label{en:1}
     \item Calcular a matriz $Y$.
@@ -260,9 +260,9 @@ valor de $1^{-7}$.
 \subsection{Separação de variáveis}
 
 Com o intuito de melhorar o controle e entendimento dos parâmetros calculados pelo MPM, foi feita uma correspondência entre os polos $z_i$ e resíduos $R_i$ com
-os parâmetros originais que compõe o sinal, nesse caso, $S_{0, i}$, $\phi_i$, $\omega_i$ e $T_{2, i}$. Considerando que um sinal de MRS pode ser representado pela 
-\autoref{eq:22}, sua versão discreta pode ser escrita assumindo $t = kT_S$, sendo $T_s$ o período de \textit{sampling} do sinal, e $k$ um inteiro representando o 
-passo, como na \autoref{eq:23}.
+os parâmetros originais que compõe o sinal, nesse caso, $S_{0, i}$, $\phi_i$, $\omega_i$ e $T_{2, i}$. Considerando que um sinal de Espectroscopia por Ressonância Magnética 
+(do inglês \textit{Magnetic Resonance Spectroscopy}, MRS) pode ser representado pela \autoref{eq:22}, sua versão discreta pode ser escrita assumindo $t = kT_S$, sendo $T_s$ 
+o período de \textit{sampling} do sinal, e $k$ um inteiro representando o passo, como na \autoref{eq:23}.
 
 \begin{equation} \label{eq:22}
     S = \sum_{i=1}^{M} S_{0, i} e^{j\omega_i t -\frac{t}{T_2}}e^{j \phi_i} 
@@ -272,7 +272,7 @@ passo, como na \autoref{eq:23}.
     S = \sum_{i=1}^{M} S_{0, i} e^{j \phi_i}  (e^{j\omega_i T_s -\frac{T_s}{T_2}})^k 
 \end{equation}
 
-Considerando que a aproximação feita por meio da \autoref{eq:21} é uma representação correta do sinal, é possível estabelecer uma equivalência 
+Considerando que a aproximação feita por meio da \autoref{eq:21} é uma representação suficientemente correta do sinal, é possível estabelecer uma equivalência 
 entre os parâmetros originais e calculados, a partir da \autoref{eq:24}.
 
 \begin{equation} \label{eq:24}
@@ -301,8 +301,19 @@ $S_{0, i}$ ao módulo de $R$, e $\phi_i$ ao argumento de $R$. A \autoref{tab:1} 
     \label{tab:1}
 \end{table}
 
+\subsection{Sinal de controle}
 
+Com o objetivo de caracterizar o comportamento do algoritmo com relação à suas variáveis $L$ e $p$, foi gerado um sinal de controle 
+de comportamento previsível e variáveis geradoras conhecidas. O sinal se trata de uma simulação de MRS elaborada a partir de um algoritmo 
+próprio, gerada a partir de parâmetros já caracterizados de metabólitos conhecidos. O sinal, gerado com um campo de $B_0 = 3T$, começa em 
+$t0 = 0.0 s$ e termina $t_n = 1.0 s$, com um passo de $dt \approx 0.000488 s$, resultando em um sinal com $2048$ pontos, de maneira 
+a se adequar ao padrão de medidas clínicas. O sinal 
+ 
 
+\subsection{Testagem de L sem ruído.}
+Foi testado, para o algoritmo implementado, como as variáveis resultantes do processo variavam em estimativa
+
+\subsection{Testagem de SVD sem ruído.}
 
 \section{Resultados}
 
