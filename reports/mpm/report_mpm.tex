@@ -89,13 +89,17 @@ para estimar os parâmetros dessa função modeladora.
     y(n) = \sum_{k=1}^{M} R_k e^{i (\omega_k t + \phi_k) + \alpha_k }
 \end{equation}
 
+\textbf{devo incluir uma parte sobre SVD?}
+
 \section{Métodos}
+
+\subsection{Implementação do MPM}
 
 A implementação do MPM em seu trabalho original é descrita originalmente de duas maneiras: a sem ruído, 
 implementada de maneira mais simplificada; e a que leva em conta a presença de ruído, que utiliza algoritmos mais complexos, como a
 Decomposição em Valores Singulares (SVD, do inglês \textit{Singular Value Decomposition}).
 
-\subsection{Caso sem ruído}
+\subsubsection{Caso sem ruído}
 Assumindo um sinal $x$ de tamanho $N$, para o caso sem ruído, define-se duas matrizes $(N-L) \times L$, $Y_1$ e $Y_2$, descritas pela \autoref{eq:2} e \autoref{eq:3}.
 
 \begin{equation} \label{eq:2}
@@ -196,7 +200,7 @@ Encontrados os polos $z_i$, basta encontrar os resíduos $R_i$ a partir de um pr
     \end{bmatrix}
 \end{equation}
 
-\subsection{Caso com ruído}
+\subsubsection{Caso com ruído} \label{sec:ruido}
 
 No caso com ruído, é construída a matriz generalizada $Y$, descrita pela \autoref{eq:16}, da qual é possível extrair $Y_1$ e $Y_2$ excluindo a 
 última e a primeira coluna, respectivamente. 
@@ -301,12 +305,18 @@ $S_{0, i}$ ao módulo de $R$, e $\phi_i$ ao argumento de $R$. A \autoref{tab:1} 
     \label{tab:1}
 \end{table}
 
-\subsection{Sinal de controle completo} \label{sec:sinal-completo}
+Com o cálculo dos parâmetros individuais bem estabelecidos, foi implementada uma função na biblioteca própria para realização dessa tarefa. Foi feita uma 
+adaptação dos cálculos dos argumentos de $R$ e $z$, visto que a função \textit{arctan2} da biblioteca \textit{numpy} retornava valores no intervalo $[-\pi, \pi)$, 
+sendo que o desejado era o intervalo $[0, 2\pi)$. Para isso, foi somado $2\pi$ para valores negativos da função, de maneira a adequá-la às necessidades apresentadas. 
+
+\subsection{Sinais de Controle}
+
+\subsubsection{Sinal de controle completo} \label{sec:sinal-completo}
 
 Com o objetivo de caracterizar o comportamento do algoritmo com relação à suas variáveis $L$ e $p$, foi gerado um sinal de controle 
 de comportamento previsível e variáveis geradoras conhecidas. O sinal se trata de uma simulação de MRS elaborada a partir de um algoritmo 
-próprio, gerada a partir de parâmetros já caracterizados de metabólitos conhecidos. O sinal, gerado com um campo de $B_0 = 3T$, começa em 
-$t_0 = 0.0 \ s$ e termina $t_n = 1.0 \ s$, com um passo de $dt \approx 0.0005 \ s$, resultando em um sinal com $2048$ pontos, de maneira 
+próprio, gerada a partir de parâmetros já caracterizados de metabólitos conhecidos. O mesmo foi gerado com um campo de $B_0 = 3T$, começando em 
+$t_0 = 0.0 \ s$ e terminando em $t_n = 1.0 \ s$, com um passo de $dt = \frac{1}{2048} \approx 0.0005 \ s$, resultando em um sinal com $2048$ pontos, de maneira 
 a se adequar ao padrão de medidas clínicas. O sinal pode se conferido pela \autoref{fig:1}.
 
 \begin{figure} [H]
@@ -315,29 +325,16 @@ a se adequar ao padrão de medidas clínicas. O sinal pode se conferido pela \au
     \caption{Sinal de controle gerado para caracterização das variáveis.}
     \label{fig:1}
 \end{figure}
- 
 
-\subsection{Testagem de L sem ruído.}
-
-Foi testado para o algoritmo implementado como as variáveis resultantes do processo se comportavam com relação à variação de $L$, no sinal 
-anteriormente apresentado, livre de ruído. Para isso, o algoritmo foi rodado com $L$ variando de $L_0 = 20\%$ do $N$ a $L_N = 80\%$ do $N$, 
-limites além de $N/3$ e $N/2$ previamente estabelecidos, com o objetivo de verificar se havia alguma flutuação significativa nos valores das 
-variáveis resultantes. Para cada $L$, variado nesse intervalo com um passo de $5\%$ do $N$ foram feitas 10 médias.
-
-\subsection{Testagem de SVD sem ruído.}
-
-Também foi testado, para o mesmo sinal, como as variáveis resultantes se comportavam com relação ao outro parâmetro do MPM, nesse caso, a 
-ordem da variável de corte do SVD. $p$ foi variado entre $p_0 = -3$ e $p_N = -15$, com um passo de uma unidade. Para cada $p$, foram feitas 
-também 10 médias. 
-
-\subsection{Sinal de controle de pico único}
+\subsubsection{Sinal de controle de pico único}
 
 Além de averiguar a influência dos parâmetros tradicionais no processo do algoritmo, foi também verificada a necessidade de avaliar o 
 comportamento dos parâmetros resultantes do processo, $S_0$, $\phi$, $\omega$ e $T_2$, com relação à qualidade do sinal, traduzida pela
 sua relação sinal-ruído (do inglês, \textit{Signal-to-Noise Ratio}, SNR). Para prosseguir, foi escolhido um novo sinal de controle: a 
-simulação de MRS de um único metabólito, no caso o N-Acetylaspartato, ou NAA. Essa escolha foi motivada pela simplificação apresentada, 
-visto que um único pico facilitaria o processo de investigação de possíveis fenômenos associados à distorções causada pela presença de 
-ruído. A simulação foi feita com as mesmas condições de contorno apresentadas na \autoref{sec:sinal-completo}, podendo ser conferida pela
+simulação de MRS de um único metabólito, o N-Acetylaspartato, ou NAA, escolhido por ser o maior pico dentre os metabólitos comumente 
+encontrados no cérebro. Essa escolha foi motivada pela simplificação apresentada, visto que um único pico facilitaria o processo de 
+investigação de possíveis fenômenos associados à distorções causada pela presença de ruído. A simulação foi feita com as mesmas 
+condições de contorno apresentadas na \autoref{sec:sinal-completo}, podendo ser conferida pela
 \autoref{fig:2}.
 
 \begin{figure} [H]
@@ -348,6 +345,41 @@ ruído. A simulação foi feita com as mesmas condições de contorno apresentad
 \end{figure}
 
 \section{Resultados}
+
+\subsection{Implementação do MPM}
+
+\subsection{Separação de variáveis}
+
+\subsection{Testagem de L sem ruído.}
+
+Foi testado para o algoritmo implementado como as variáveis resultantes do processo se comportavam com relação à variação de $L$, no sinal 
+anteriormente apresentado, livre de ruído. Para isso, o algoritmo foi rodado com $L$ variando de $L_0 = 20\%$ do $N$ a $L_N = 80\%$ do $N$, 
+limites além de $N/3$ e $N/2$ previamente estabelecidos, com o objetivo de verificar se havia alguma flutuação significativa nos valores das 
+variáveis resultantes. Para cada $L$, variado nesse intervalo com um passo de $5\%$ do $N$ foram feitas 10 médias. A comparação foi feita por 
+meio da Raiz do Erro Quadrático Médio (do inglês \textit{Root-mean-squared Error}, RMSE), e pode ser conferida pela \autoref{fig:3}.
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.3125]{RMSE-L.png}
+    \caption{Resultados para a variação de $L$}
+    \label{fig:3}
+\end{figure}
+
+Pela \autoref{fig:3}, é possível concluir que a escolha do $L$ parece não impactar a capacidade de cálculo das variáveis originais do sinal 
+limpo de ruído, visto que as flutuações de valor do RMSE médio são praticamente zero.
+
+\subsection{Testagem de SVD sem ruído.}
+
+Também foi testado, para o mesmo sinal, como as variáveis resultantes se comportavam com relação ao outro parâmetro do MPM, nesse caso, a 
+ordem da variável de corte do SVD. $p$ foi variado entre $p_0 = -3$ e $p_N = -15$, com um passo de uma unidade. Para cada $p$, foram feitas 
+também 10 médias. 
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.4166]{RMSE-p.png}
+    \caption{Resultados para a variação de $p$}
+    \label{fig:4}
+\end{figure}
 
 \section{Conclusão}
 
