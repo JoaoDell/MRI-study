@@ -53,13 +53,13 @@
 \section{Resumo}
 
 \begin{enumerate}
-    \item Descrever o que é "pencil"
-    \item Implementação do MPM sem ruído
-    \item Implementação do MPM com ruído
-    \item Separação de variáveis (s0, phi, omega, T2)
-    \item Testagem do L sem ruído
-    \item Testagem do SVD sem ruído
-    \item Testagem do L com ruído
+    \item Descrever o que é "pencil" \textbf{CONCLUIDO}
+    \item Implementação do MPM sem ruído \textbf{CONCLUIDO}
+    \item Implementação do MPM com ruído \textbf{CONCLUIDO}
+    \item Separação de variáveis (s0, phi, omega, T2) \textbf{CONCLUIDO}
+    \item Testagem do L sem ruído \textbf{CONCLUIDO}
+    \item Testagem do SVD sem ruído \textbf{CONCLUIDO}
+    \item Testagem do L com ruído 
     \item Testagem do SVD com ruído
     \item Testagem do comportamento das variáveis separadas com a introdução de ruído de valores de sigma variados
 \end{enumerate}
@@ -315,7 +315,7 @@ sendo que o desejado era o intervalo $[0, 2\pi)$. Para isso, foi somado $2\pi$ p
 
 Com o objetivo de caracterizar o comportamento do algoritmo com relação à suas variáveis $L$ e $p$, foi gerado um sinal de controle 
 de comportamento previsível e variáveis geradoras conhecidas. O sinal se trata de uma simulação de MRS elaborada a partir de um algoritmo 
-próprio, gerada a partir de parâmetros já caracterizados de metabólitos conhecidos. O mesmo foi gerado com um campo de $B_0 = 3T$, começando em 
+próprio, gerada a partir de parâmetros já caracterizados de metabólitos conhecidos, e fase $\phi = 0$. O mesmo foi gerado com um campo de $B_0 = 3T$, começando em 
 $t_0 = 0.0 \ s$ e terminando em $t_n = 1.0 \ s$, com um passo de $dt = \frac{1}{2048} \approx 0.0005 \ s$, resultando em um sinal com $2048$ pontos, de maneira 
 a se adequar ao padrão de medidas clínicas. O sinal pode se conferido pela \autoref{fig:1}.
 
@@ -326,7 +326,7 @@ a se adequar ao padrão de medidas clínicas. O sinal pode se conferido pela \au
     \label{fig:1}
 \end{figure}
 
-\subsubsection{Sinal de controle de pico único}
+\subsubsection{Sinal de controle de pico único} \label{sec:sinal-unico}
 
 Além de averiguar a influência dos parâmetros tradicionais no processo do algoritmo, foi também verificada a necessidade de avaliar o 
 comportamento dos parâmetros resultantes do processo, $S_0$, $\phi$, $\omega$ e $T_2$, com relação à qualidade do sinal, traduzida pela
@@ -334,8 +334,7 @@ sua relação sinal-ruído (do inglês, \textit{Signal-to-Noise Ratio}, SNR). Pa
 simulação de MRS de um único metabólito, o N-Acetylaspartato, ou NAA, escolhido por ser o maior pico dentre os metabólitos comumente 
 encontrados no cérebro. Essa escolha foi motivada pela simplificação apresentada, visto que um único pico facilitaria o processo de 
 investigação de possíveis fenômenos associados à distorções causada pela presença de ruído. A simulação foi feita com as mesmas 
-condições de contorno apresentadas na \autoref{sec:sinal-completo}, podendo ser conferida pela
-\autoref{fig:2}.
+condições de contorno apresentadas na \autoref{sec:sinal-completo}, podendo ser conferida pela \autoref{fig:2}.
 
 \begin{figure} [H]
     \includegraphics[scale=0.5]{sinal-unico-pico.png}
@@ -355,8 +354,9 @@ condições de contorno apresentadas na \autoref{sec:sinal-completo}, podendo se
 Foi testado para o algoritmo implementado como as variáveis resultantes do processo se comportavam com relação à variação de $L$, no sinal 
 anteriormente apresentado, livre de ruído. Para isso, o algoritmo foi rodado com $L$ variando de $L_0 = 20\%$ do $N$ a $L_N = 80\%$ do $N$, 
 limites além de $N/3$ e $N/2$ previamente estabelecidos, com o objetivo de verificar se havia alguma flutuação significativa nos valores das 
-variáveis resultantes. Para cada $L$, variado nesse intervalo com um passo de $5\%$ do $N$ foram feitas 10 médias. A comparação foi feita por 
-meio da Raiz do Erro Quadrático Médio (do inglês \textit{Root-mean-squared Error}, RMSE), e pode ser conferida pela \autoref{fig:3}.
+variáveis resultantes. Para cada $L$, variado nesse intervalo com um passo de $5\%$ do $N$ foram feitas 10 médias. O parâmetro $p$ foi fixado 
+em 15, e a comparação foi feita por meio da Raiz do Erro Quadrático Médio (do inglês \textit{Root-mean-squared Error}, RMSE), podendo ser 
+conferida pela \autoref{fig:3}.
 
 \begin{figure} [H]
     \centering
@@ -371,7 +371,7 @@ limpo de ruído, visto que as flutuações de valor do RMSE médio são praticam
 \subsection{Testagem de SVD sem ruído.}
 
 Também foi testado, para o mesmo sinal, como as variáveis resultantes se comportavam com relação ao outro parâmetro do MPM, nesse caso, a 
-ordem da variável de corte do SVD. $p$ foi variado entre $p_0 = -3$ e $p_N = -15$, com um passo de uma unidade. Para cada $p$, foram feitas 
+ordem da variável de corte do SVD. $p$ foi variado entre $p_0 = 3$ e $p_N = 15$, com um passo de uma unidade, e $L = 40\%$. Para cada $p$, foram feitas 
 também 10 médias. 
 
 \begin{figure} [H]
@@ -380,6 +380,16 @@ também 10 médias.
     \caption{Resultados para a variação de $p$}
     \label{fig:4}
 \end{figure}
+
+A priori, o evidente erro com relação às fases pode chamar a atenção, visto que a fase de entrada do sinal de controle era $\phi = 0$.
+Constatou-se, porém, que sua origem reside em pequenos erros numéricos que se propagam na função \textit{arctan2}, provocando um resultado 
+de saída de aproximadamente $2\pi$ para fases calculadas, equivalente à fase esperada. Esclarecido esse importante detalhe, é possível concluir
+que, novamente para o sinal limpo, a $p$ não demonstra nenhuma influência significativa na capacidade de cálculo das variáveis originais.
+
+\subsection{Relação entre as variáveis e o ruído}
+
+De maneira a caracterizar o comportamento da variáveis com relação ao ruído, a simulação de pico único da \autoref{sec:sinal-unico} foi corrompida com
+ruídos de diferentes níveis
 
 \section{Conclusão}
 
