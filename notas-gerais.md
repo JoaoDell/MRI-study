@@ -24,3 +24,15 @@
 12. A partir da mudança acima, fazer um gráfico que relacione o *número de picos*, o *snr*, e talvez um teceiro eixo, o do *RMSE* entre a amostra original e a reconstruída com apenas `n_comp` componentes. Caso a visualização 3D não funcione, fazer um gráfico separado. Analisar o RMSE na área do pico e no sinal inteiro, ou seja, terá duas informações de RMSE. **INCOMPLETO**
 13. Reduzir o intervalo de SNR para [500, 750, 1000, 2500, 5000, 7500, 10000, 25000, 50000]. **COMPLETO**
 14. Fazer uma análise visual para cada gráfico com SNR gerado e analisar para ver como se comporta o resíduo (original - reconstruído) na região do pico. Verificar se dentro dos picos individuais o pico original existe, e se não, se há vários picos individuais que reconstroem o pico original. **INCOMPLETO**
+
+## Reunião 04/06/2025
+
+1. Encontrar a AGWN no python (função do matlab que gera ruído gaussiano a partir de um snr dado).
+
+## Reunião 10/06/2025
+
+1. Testar se mudar a fase em um sinal muda a cara do ruído.
+2. Explicar os códigos de [examples\MPM\new_snr.ipynb](examples\MPM\new_snr.ipynb)
+3. Escrever o resumo para :
+    - Explicar bem o MPM.
+    - Colocar como perspectiva para aplicação clínica, resolver picos com altos graus de superposição.

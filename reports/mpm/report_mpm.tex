@@ -93,7 +93,7 @@ para estimar os parâmetros dessa função modeladora.
 
 \section{Métodos}
 
-\subsection{Implementação do MPM}
+\subsection{Implementação do MPM} \label{sec:implement-mpm}
 
 A implementação do MPM em seu trabalho original é descrita originalmente de duas maneiras: a sem ruído, 
 implementada de maneira mais simplificada; e a que leva em conta a presença de ruído, que utiliza algoritmos mais complexos, como a
@@ -343,11 +343,66 @@ condições de contorno apresentadas na \autoref{sec:sinal-completo}, podendo se
     \label{fig:2}
 \end{figure}
 
+\subsection{Corrupção dos Sinais}
+
+A corrupção dos sinais foi realizada pela função \textit{awgn}, da biblioteca \textit{scikit-commpy}, uma biblioteca código aberto que 
+reúne ferramentas para o estudo e simulação de sinais de comunicações. A função mencionada recebe como entrada o sinal e um valor de SNR, 
+em dB, para o qual o sinal deve ter ao ser corrompido. A corrupção é feita com ruído gaussiano, e usa a definição de $SNR$ explicada em 
+\autoref{eq:26}.
+
+\begin{equation} \label{eq:26}
+    SNR = \frac{P_{sinal}}{P_{ruido}}
+\end{equation}
+
+Sendo $P_{sinal}$ e $P_{ruido}$ a potência média do sinal e a potência do ruído, respectivamente. 
+
+
 \section{Resultados}
 
 \subsection{Implementação do MPM}
 
+O algoritmo foi implementado, assim como descrito na \autoref{sec:implement-mpm}, em etapas. Primeiro, foi testada a capacidade do mesmo 
+de identificar exponencias decrescentes em condições ideias, a partir da implementação que não leva em conta ruído. A \autoref{fig:8} 
+
+demonstra um exemplo, para o sinal descrito na \autoref{sec:sinal-completo}, de decomposição e reconstrução do mesmo a partir da implementação
+que ignora a etapa que usa SVD, para $L$ de $40\%$. O algoritmo parece ter obtido sucesso na identificação dos picos dos metabólitos.
+
+\begin{figure} [H]
+    \includegraphics[scale=0.5]{mpm-sem-ruido.png}
+    \centering
+    \caption{Sinal limpo reconstruído a partir do processo de MPM sem ruído}
+    \label{fig:8}
+\end{figure}
+
+Realizada a etapa de filtragem em um sinal sem ruído, foi implementada então a etapa da filtragem por SVD. Para testar seu funcionamento, o sinal
+anteriormente usado foi corrompido com um SNR de valor $15 dB$. A \autoref{fig:9} demonstra um exemplo da decomposição e reconstrução desse sinal 
+corrompido, para $L$ de $40\%$ e limite de ruído de $1^{-24}$. O limite de ruído foi escolhido extremamente baixo de maneira a testar se o algoritmo 
+continuava a funcionar após implementação da etapa de SVD. 
+
+
+\begin{figure} [H]
+    \includegraphics[scale=0.5]{mpm-com-ruido.png}
+    \centering
+    \caption{Sinal corrompido reconstruído a partir do processo de MPM com ruído de SNR equivalente a $15 dB$}
+    \label{fig:9}
+\end{figure}
+
 \subsection{Separação de variáveis}
+
+Para testar a capacidade de cálculo das variáveis pelo programa, foi usado o sinal limpo descrito na \autoref{sec:sinal-unico}. Esse sinal foi processado pelo 
+MPM no domínio do tempo, e a partir dos polos e resíduos calculados, teve suas variáveis resultantes calculadas. Todas essas variáveis, por sua vez, foram 
+ordenadas em ordem crescente a partir da amplitude $S_0$.
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.4166]{var-0.png}
+    \caption{Valor das variáveis para o sinal limpo}
+    \label{fig:5}
+\end{figure}
+
+Como pode ser verificado pela \autoref{fig:5}, o cálculo foi realizado com sucesso, no qual todas as variáveis esperadas foram encontradas. É importante comentar 
+que, por motivos de origem numérica, uma fase errônea de aproximadamente $\pi$ foi calculada, porém na reconstrução do sinal original, essa fase multiplica uma 
+amplitude $S_0$ de valor 0, fazendo-a desaparecer. 
 
 \subsection{Testagem de L sem ruído.}
 
@@ -389,8 +444,37 @@ que, novamente para o sinal limpo, a $p$ não demonstra nenhuma influência sign
 \subsection{Relação entre as variáveis e o ruído}
 
 De maneira a caracterizar o comportamento da variáveis com relação ao ruído, a simulação de pico único da \autoref{sec:sinal-unico} foi corrompida com
-ruídos de diferentes níveis
+ruídos de diferentes níveis, variando o SNR resultante de $0.25$ a $100.0$. 
 
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.4166]{var-1.png}
+    \caption{Valor das variáveis para o segundo SNR, de valor $100$}
+    \label{fig:6}
+\end{figure}
+
+Esse fenômeno de variáveis de valores "exóticos", presente no cálculo da fase em sinal limpo na \autoref{fig:5}, se mostrou comum ao longo dos outros processos de 
+cálculo, tornando necessária a sua análise no contexto do algoritmo. Como pode ser verificado pela \autoref{fig:6}, para um valor de SNR mais baixo, nesse caso 100, 
+o cálculo das frequência, tempos de decaimento e das fases demonstrou o mesmo comportamento anteriormente descrito, com valores oscilando de maneira ruidosa e pouco 
+previsível, e amplitudes signficativas. Assim como descrito no caso de SNR infinito, a priori esse fenômeno pode se apresentar como obstáculo à capacidade de cálculo 
+do MPM, porém novamente, quando analisada sob o contexto das outras variáveis, a maioria dos valores, quando multiplicados pela amplitude $S_0$, se anula.
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.4166]{vars-total.png}
+
+    \caption{Valor das variáveis para o segundo SNR, de valor $100$}
+    \label{fig:7}
+\end{figure}
+
+A variável $S_0$ aqui se mostra dominante para a construção do sinal final. Como verificado pela \autoref{fig:7}, conforme o SNR decresce, partindo da ordenação 
+crescente de amplitudes, a distribuição de valores de $S_0$ não nulos aumenta. Esse aumento tanto em quantidade quanto em amplitude confere ao sinal final uma 
+quantidade maior de frequências aparentemente aleatórias, compondo assim o ruído característico da corrupção originalmente aplicada.
+
+\subsection{Relação entre pico e ruído}
+
+
+ 
 \section{Conclusão}
 
 
