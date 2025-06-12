@@ -347,8 +347,8 @@ condições de contorno apresentadas na \autoref{sec:sinal-completo}, podendo se
 
 A corrupção dos sinais foi realizada pela função \textit{awgn}, da biblioteca \textit{scikit-commpy}, uma biblioteca código aberto que 
 reúne ferramentas para o estudo e simulação de sinais de comunicações. A função mencionada recebe como entrada o sinal e um valor de SNR, 
-em dB, para o qual o sinal deve ter ao ser corrompido. A corrupção é feita com ruído gaussiano, e usa a definição de $SNR$ explicada em 
-\autoref{eq:26}.
+em dB, para o qual o sinal deve ter ao ser corrompido. A corrupção é feita com ruído gaussiano, diretamente no espectro do sinal, e usa 
+a definição de $SNR$ explicada em \autoref{eq:26}.
 
 \begin{equation} \label{eq:26}
     SNR = \frac{P_{sinal}}{P_{ruido}}
@@ -363,7 +363,6 @@ Sendo $P_{sinal}$ e $P_{ruido}$ a potência média do sinal e a potência do ru�
 
 O algoritmo foi implementado, assim como descrito na \autoref{sec:implement-mpm}, em etapas. Primeiro, foi testada a capacidade do mesmo 
 de identificar exponencias decrescentes em condições ideias, a partir da implementação que não leva em conta ruído. A \autoref{fig:8} 
-
 demonstra um exemplo, para o sinal descrito na \autoref{sec:sinal-completo}, de decomposição e reconstrução do mesmo a partir da implementação
 que ignora a etapa que usa SVD, para $L$ de $40\%$. O algoritmo parece ter obtido sucesso na identificação dos picos dos metabólitos.
 
@@ -389,13 +388,13 @@ continuava a funcionar após implementação da etapa de SVD.
 
 \subsection{Separação de variáveis}
 
-Para testar a capacidade de cálculo das variáveis pelo programa, foi usado o sinal limpo descrito na \autoref{sec:sinal-unico}. Esse sinal foi processado pelo 
-MPM no domínio do tempo, e a partir dos polos e resíduos calculados, teve suas variáveis resultantes calculadas. Todas essas variáveis, por sua vez, foram 
-ordenadas em ordem crescente a partir da amplitude $S_0$.
+Para testar a capacidade de cálculo das variáveis $S_0$, $\phi$, $\omega$ e $T_2$ pelo programa, foi usado o sinal limpo descrito na \autoref{sec:sinal-unico}. 
+Esse sinal foi processado pelo MPM no domínio do tempo, e a partir dos polos e resíduos calculados, teve suas variáveis resultantes calculadas. Todas essas 
+variáveis, por sua vez, foram ordenadas em ordem crescente a partir da amplitude $S_0$.
 
 \begin{figure} [H]
     \centering
-    \includegraphics[scale=0.4166]{var-0.png}
+    \includegraphics[scale=0.625]{var-0.png}
     \caption{Valor das variáveis para o sinal limpo}
     \label{fig:5}
 \end{figure}
@@ -405,13 +404,13 @@ que, por motivos de origem numérica, uma fase errônea de aproximadamente $\pi$
 amplitude $S_0$ de valor 0, fazendo-a desaparecer. 
 
 \subsection{Testagem de L sem ruído.}
-
-Foi testado para o algoritmo implementado como as variáveis resultantes do processo se comportavam com relação à variação de $L$, no sinal 
-anteriormente apresentado, livre de ruído. Para isso, o algoritmo foi rodado com $L$ variando de $L_0 = 20\%$ do $N$ a $L_N = 80\%$ do $N$, 
-limites além de $N/3$ e $N/2$ previamente estabelecidos, com o objetivo de verificar se havia alguma flutuação significativa nos valores das 
-variáveis resultantes. Para cada $L$, variado nesse intervalo com um passo de $5\%$ do $N$ foram feitas 10 médias. O parâmetro $p$ foi fixado 
-em 15, e a comparação foi feita por meio da Raiz do Erro Quadrático Médio (do inglês \textit{Root-mean-squared Error}, RMSE), podendo ser 
-conferida pela \autoref{fig:3}.
+Com a simulação e o algoritmo implementados com sucesso, foi possível enfim iniciar o estudo de seu comportamento na aplicação em sinais para 
+diferentes parâmetros e processos, como inicialmente planejado. Como primeira etapa, foi testado para o algoritmo implementado como as variáveis resultantes do 
+processo se comportavam com relação à variação de $L$, no sinal anteriormente apresentado, livre de ruído. Para isso, o algoritmo foi rodado 
+com $L$ variando de $L_0 = 20\%$ do $N$ a $L_N = 80\%$ do $N$, limites além de $N/3$ e $N/2$ previamente estabelecidos, com o objetivo de verificar 
+se havia alguma flutuação significativa nos valores das variáveis resultantes. Para cada $L$, variado nesse intervalo com um passo de $5\%$ do $N$ 
+foram feitas 10 médias. O parâmetro $p$ foi fixado em 15, e a comparação foi feita por meio da 
+Raiz do Erro Quadrático Médio (do inglês \textit{Root-mean-squared Error}, RMSE), podendo ser conferida pela \autoref{fig:3}.
 
 \begin{figure} [H]
     \centering
@@ -427,7 +426,8 @@ limpo de ruído, visto que as flutuações de valor do RMSE médio são praticam
 
 Também foi testado, para o mesmo sinal, como as variáveis resultantes se comportavam com relação ao outro parâmetro do MPM, nesse caso, a 
 ordem da variável de corte do SVD. $p$ foi variado entre $p_0 = 3$ e $p_N = 15$, com um passo de uma unidade, e $L = 40\%$. Para cada $p$, foram feitas 
-também 10 médias. 
+também 10 médias. $p_0$ foi escolhido como 3 pois constatou-se que a partir de $p = 2$ os picos principais do sinal eram filtrados, impossibilitando a 
+análise por meio do RMSE.
 
 \begin{figure} [H]
     \centering
@@ -437,18 +437,19 @@ também 10 médias.
 \end{figure}
 
 A priori, o evidente erro com relação às fases pode chamar a atenção, visto que a fase de entrada do sinal de controle era $\phi = 0$.
-Constatou-se, porém, que sua origem reside em pequenos erros numéricos que se propagam na função \textit{arctan2}, provocando um resultado 
-de saída de aproximadamente $2\pi$ para fases calculadas, equivalente à fase esperada. Esclarecido esse importante detalhe, é possível concluir
-que, novamente para o sinal limpo, a $p$ não demonstra nenhuma influência significativa na capacidade de cálculo das variáveis originais.
+Constatou-se porém, após verificar manualmente os valores de fases gerados, que sua origem reside em pequenos erros numéricos que se propagam na função 
+\textit{arctan2}, provocando um resultado de saída de aproximadamente $2\pi$ para fases calculadas, equivalente à fase esperada. Esclarecido esse 
+importante detalhe, é possível concluir que, novamente para o sinal limpo, a $p$ não demonstra nenhuma influência significativa na capacidade de cálculo das 
+variáveis originais.
 
 \subsection{Relação entre as variáveis e o ruído}
 
-De maneira a caracterizar o comportamento da variáveis com relação ao ruído, a simulação de pico único da \autoref{sec:sinal-unico} foi corrompida com
-ruídos de diferentes níveis, variando o SNR resultante de $0.25$ a $100.0$. 
+Caracterizou-se o comportamento da variáveis anteriormente mencionadas com relação ao ruído, a simulação de pico único da \autoref{sec:sinal-unico} foi corrompida com
+ruídos de diferentes níveis, variando o SNR resultante de $1.0$ a $100.0$. 
 
 \begin{figure} [H]
     \centering
-    \includegraphics[scale=0.4166]{var-1.png}
+    \includegraphics[scale=0.625]{var-1.png}
     \caption{Valor das variáveis para o segundo SNR, de valor $100$}
     \label{fig:6}
 \end{figure}
@@ -461,7 +462,7 @@ do MPM, porém novamente, quando analisada sob o contexto das outras variáveis,
 
 \begin{figure} [H]
     \centering
-    \includegraphics[scale=0.4166]{vars-total.png}
+    \includegraphics[scale=0.625]{vars-total.png}
 
     \caption{Valor das variáveis para o segundo SNR, de valor $100$}
     \label{fig:7}
@@ -471,7 +472,14 @@ A variável $S_0$ aqui se mostra dominante para a construção do sinal final. C
 crescente de amplitudes, a distribuição de valores de $S_0$ não nulos aumenta. Esse aumento tanto em quantidade quanto em amplitude confere ao sinal final uma 
 quantidade maior de frequências aparentemente aleatórias, compondo assim o ruído característico da corrupção originalmente aplicada.
 
-\subsection{Relação entre pico e ruído}
+\subsection{Relação entre picos e ruído}
+
+Outra relação explorada por meio do MPM foi o comportamento das frequências do sinal original após serem corrompidas. Para isso, foi usado o sinal implementado em
+\autoref{sec:sinal-unico}, de pico único, de maneira a simplificar a análise. Esse sinal foi corrompido com ruídos de SNRs resultantes no intervalo de 
+$1.0$ a $100.0$, com passos não lineares. Cada sinal corrompido era desconstruído pelo MPM e tinha suas variáveis calculadas. Foi realizada então uma filtragem a 
+partir do valor de seus picos $S_0$, na qual se calculava o maior pico, e a partir dele eram escolhidos os $n$ picos com valor maior ou igual a $5\%$ do maior pico. 
+Esse procedimento foi realizado $50$ vezes para cada SNR, paara análise estatística.
+ 
 
 
  
