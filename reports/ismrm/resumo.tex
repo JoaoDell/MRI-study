@@ -1,0 +1,90 @@
+%start by defining the document class
+\documentclass[12pt]{article}
+
+%below the package used for hyperlinking
+\usepackage[a4paper, top=2.3cm, bottom=2.3cm, left=2.3cm, right=2.3cm]{geometry}
+\usepackage{graphicx}	
+\usepackage[brazil]{babel}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{amsfonts} 
+\usepackage{amsmath}
+\usepackage[brazil]{babel}
+\graphicspath{ {images/} }
+
+\linespread{1.2}
+\setlength{\parindent}{1.3cm}
+
+\title{O MPM como Ferramenta para o Processamento de Dados Clínicos de Ressonância Magnética: Uma Avaliação da Viabilidade}
+\author{FLORIANO, J. V. D. A. \\ Instituto de Física de São Carlos \and PAIVA, F. F. \\ Instituto de Física de São Carlos}
+
+\begin{document}
+
+\maketitle
+
+\section{Resumo}
+O seguinte trabalho tem como objetivo caracterizar o uso do algoritmo Matrix Pencil Method (MPM) aplicado à sinais clínicos de MRS. 
+A partir de uma simulação implementada \textit{in loco}  baseada em parâmetros empíricos de metabólitos presentes no cérebro, foram gerados 
+sinais sintéticos de MRS, os quais foram corrompidos de maneira artificial com ruído gaussiano de valores variados. Esses sinais 
+corrompidos foram então pós-processados por meio do algoritmo do MPM, implementado com sucesso também de maneira local, baseando-se 
+no trabalho de Yingbo Hua e Tapan Sakar \cite{370583}, permitindo a recuperação dos parâmetros originais do sinal, o conjunto de 
+amplitudes $S_0$, as frequências $\omega$, as fases $\phi$, e os tempos de decaimento $T_2$. O comportamento desses parâmetros foi analisado 
+para diferentes SNR, revelando um papel importante da amplitude $S_0$ na composição do sinal. Foi também estudado o comportamento de 
+um pico único sob efeito de ruído, revelando um comportamento exponencial decrescente na quantidade de picos de valor relevante 
+conforme o SNR crescia, com prevalência do pico único como maior valor dentre todos. Espera-se elucidar melhor o comportamento de 
+sinais clínicos sob a ótica do MPM, com perspectiva de encontrar caminhos para a melhora na qualidade de sua análise.
+
+\section{Introdução}
+O método “Lápis de Matrizes", do inglês \textit{Matrix Pencil Method} (MPM) é uma técnica numérica de estimativa de parâmetros de 
+sinais, desenvolvido originalmente por Yingbo Hua e Tapan Sakar \cite{370583} como uma alternativa a métodos já existentes como o 
+de Prony \cite{49090}. O mesmo consiste em modelar os sinais como uma soma de exponenciais complexas amortecidas. Partindo dessa 
+ideia, é então aplicada uma série de etapas, que inclui a utilização de outros métodos, como Decomposição em Valores Singulares 
+(SVD, do inglês \textit{Singular Value Decomposition}), para estimar os parâmetros dessa função modeladora. Esse método, por sua 
+vez, encontra na área de Ressonância Magnética Nuclear (do inglês, Nuclear Magnetic Resonance, NMR) uma potencial aplicabilidade, 
+visto que o fenômeno segue o mesmo comportamento de sua função modeladora. Especificamente na subárea de Espectroscopia por 
+Ressonância Magnética (do inglês, Magnetic Resonance Spectroscopy, MRS), o método pode oferecer uma alternativa ao problema de 
+corrupção de sinais por ruído, que podem prejudicar significativamente a qualidade do sinal adquirido. O estudo desse fenômeno 
+por meio do MPM pode revelar potenciais caminhos para sua resolução.
+
+\section{Métodos} 
+O MPM parte da modelagem de um sistema de matrizes a partir do conceito de “lápis de funções”. É construída uma matriz principal 
+a partir do mesmo sinal, a qual cada linha será o sinal percorrido com um passo de diferença, e a distância total terá tamanho 
+L, definindo também o tamanho do lado da matriz. Essa matriz é decomposta por meio do método de Decomposição em Valores Singulares 
+(do inglês, Singular Value Decomposition, SVD), a qual serão filtrados os valores menos significativos da decomposição, correspondentes 
+geralmente ao ruído, reconstruindo a mesma com menos elementos. Após a reconstrução, a matriz é separada em duas submatrizes, $Y_1$ e 
+$Y_2$, a qual a primeira é a matriz principal sem a última coluna, e a segunda é a matriz principal sem a primeira coluna. Essas duas 
+submatrizes, a partir de um lápis, tem então seus autovalores generalizados calculados, resultando nos polos $z_i$, que contém informações 
+sobre a frequência $\omega_i$ e tempo de decaimento $T_{2, i}$. A partir dos polos, são então calculados os resíduos $R_i$ a partir da 
+resolução de um problema de mínimos quadrados. Os resíduos, por sua vez, contém as informações restantes, sobre a amplitude $S_{0, i}$ 
+e a fase $\phi_i$. Para estudo do algoritmo no contexto de ruído, sinais sintéticos de MRS foram corrompidos com ruído gaussiano de 
+valores de desvio padrão correspondentes a relações sinal-ruído (do inglês, Signal-to-noise ratio, SNR) entre 1dB e 100dB. Esses 
+sinais foram analisados por meio do algoritmo em diferentes etapas de testes.
+
+\section{Resultados}
+A implementação do MPM foi feita com sucesso, demonstrando capacidade de identificar picos individuais com precisão em sinais 
+clínicos de MRS livres de ruído, a partir da separação de parâmetros. No caso dos sinais corrompidos, foi possível identificar 
+uma série de frequências, das quais as pertencentes ao sinal original tinham seus valores ligeiramente distorcidos por conta do 
+ruído. Analisando de maneira mais detalhada o comportamento dos parâmetros originais do sinal de maneira conjunta, averiguou-se 
+que a amplitude $S_0$ desempenha um papel fundamental de filtro dos demais parâmetros, determinando o quanto cada frequência individual 
+identificada comporá o sinal final. Foi também estudado o comportamento de um único pico, o N-acetyl-aspartato (NAA), em diferentes 
+níveis de SNR. Esse estudo, por meio da separação de parâmetros, verificou que o número de picos individuais identificados pelo 
+algoritmo de valor relevante, aqui escolhidos como maiores ou iguais a 5\% do pico de NAA (maior pico), demonstrou comportamento 
+exponencialmente decrescente conforme o valor de SNR aumentou. Além disso, foram identificados vários picos sobrepostos na área 
+correspondente ao pico do NAA.
+
+\section{Conclusão}
+Considerando sua capacidade de extração de informações de sinais pós-aquisição, o MPM se mostra uma interessante ferramenta 
+para o estudo de sinais de MRS. Sua capacidade de separar os parâmetros individuais do sinal abre novos caminhos para o entendimento 
+dos fenômenos na área, com a perspectiva de mitigar os efeitos associados à corrupção por ruído em sinais clínicos, possibilitando uma 
+análise de maior qualidade. No tocante aos testes realizados, o parâmetro de amplitude, $S_0$, desempenha importante papel de filtro de 
+parâmetros, demonstrando capacidade de seleção e modelagem do formato do sinal final. Com relação ao comportamento dos picos, foi 
+possível verificar que, apesar do número de picos de valor significativo aumentar, o maior pico ainda se manteve, mesmo que com 
+frequência distorcida. Como próxima etapa, pretende-se investigar o comportamento dos parâmetros do sinal com a sobreposição de 
+dois picos.
+
+
+\bibliographystyle{plain}
+\bibliography{refs}
+
+
+\end{document}

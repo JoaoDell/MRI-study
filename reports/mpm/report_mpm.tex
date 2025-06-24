@@ -22,12 +22,11 @@
         \vspace*{1cm}
             
         \Huge
-        \textbf{Simulação de Sinais Cerebrais de Espectroscopia por 
-        Ressonância Magnética}
+        \textbf{O MPM como Ferramenta para o Processamento de Dados Clínicos de Ressonância Magnética}
             
         \vspace{0.5cm}
         \LARGE
-        Da Criação à Corrupção (Por Ruído)
+        Uma Avaliação da Viabilidade
             
         \vspace{1.5cm}
             
@@ -66,6 +65,8 @@
 
 \section{Introdução}
 
+\subsection{Lápis de Matrizes}
+
 O termo "lápis" (do inglês \textit{pencil}), cunhado por Grantmatcher \cite{} no contexto de \textit{pencil} de matrizes, é uma ferramenta que combina matrizes 
 quadradas linearmente a partir de um parâmtero $\lambda$, como descrito pela \autoref{eq:19}. $l$ é um inteiro não-negativo.
 
@@ -89,7 +90,37 @@ para estimar os parâmetros dessa função modeladora.
     y(n) = \sum_{k=1}^{M} R_k e^{i (\omega_k t + \phi_k) + \alpha_k }
 \end{equation}
 
-\textbf{devo incluir uma parte sobre SVD?}
+\subsection{Decomposição em Valores Singulares}
+
+A Decomposição em Valores Singulares, ou SVD, é um método antigo de fatoração de matrizes, tendo sido desenvolvido no século XIX, no qual por volta de 1870 
+foi estabelecido para matrizes reais por Beltrami e Jordan \cite{LIANG2002527}. Dada uma matriz $M$ real, de tamanho $n \times m$, sua decomposição SVD terá o 
+formato definido pela \autoref{eq:32}.
+
+\begin{equation} \label{eq:32}
+    M = U \Sigma V^T
+\end{equation}
+
+A qual:
+\begin{itemize}
+  \item $U$: Matriz $n \times n$ a qual suas colunas são os autovetores de $MM^T$, também chamados de \emph{vetores singulares à esquerda}
+  \item $V$: Matriz  $m \times m$ a qual suas colunas os autovetores de $M^TM$, também chamados de \emph{vetores singulares à direita}
+  \item $\Sigma$: Matriz $n \times m$ a qual suas entradas diagonais são as raízes quadradas dos autovalores não nulos de $M^TM$ ou $MM^T$, também chamadas de \emph{valores singulares}. 
+\end{itemize}
+
+Essas três submatrizes, por sua vez, possuem inúmeras interpretações, geralmente dependendo do contexto a qual a decomposição foi aplicada. Uma interpretação comum, no contexto o qual $M$ é 
+uma transformação linear, é que essas três submatrizes são uma fatoração da transformação original em três operações elementares: uma rotação no subespaço de $V$, um dimensionamento por $\Sigma$, 
+e uma rotação no subespaço de $U$. 
+
+\begin{figure}[H]
+    \includegraphics[scale=0.20]{images/1024px-Singular-Value-Decomposition.svg.png}
+    \centering 
+    \caption{Sub-transformações de M.\\
+        Fonte: https://commons.wikimedia.org/wiki/File:Singular-Value-Decomposition.svg}
+    \label{subtransforms}
+\end{figure}
+
+No contexto deste trabalho, essa ferramenta é essencial para o algoritmo de MPM, sendo utilizado não apenas explicitamente no mesmo, como também de maneira implícita em outras etapas, como a do 
+cálculo da matriz pseudo-inversa de Moore-Penrose, e no processo de mínimos quadrados.
 
 \section{Métodos}
 
@@ -345,16 +376,46 @@ condições de contorno apresentadas na \autoref{sec:sinal-completo}, podendo se
 
 \subsection{Corrupção dos Sinais}
 
+% (referencias daqui em "\books\Mathuranathan Viswanathan - Digital Modulations using Python (2019).pdf")
+% https://www.youtube.com/watch?v=ymVvT58Po5k
+
 A corrupção dos sinais foi realizada pela função \textit{awgn}, da biblioteca \textit{scikit-commpy}, uma biblioteca código aberto que 
-reúne ferramentas para o estudo e simulação de sinais de comunicações. A função mencionada recebe como entrada o sinal e um valor de SNR, 
-em dB, para o qual o sinal deve ter ao ser corrompido. A corrupção é feita com ruído gaussiano, diretamente no espectro do sinal, e usa 
-a definição de $SNR$ explicada em \autoref{eq:26}.
+reúne ferramentas para o estudo e simulação de sinais de comunicações. Apesar de se tratar de outra área aparentemente distante, seu uso 
+foi considerado adequado pois seu funcionamento se mostrou condizente com o propósito deste projeto, considerando seu funcionamento 
+estável e possibilidade de controle do parâmetro SNR. A função mencionada recebe como entrada o sinal e um valor de SNR, em dB, para o 
+qual o sinal deve ter ao ser corrompido, e parte da definição estabelecida em \autoref{eq:26}.
 
 \begin{equation} \label{eq:26}
-    SNR = \frac{P_{sinal}}{P_{ruido}}
+    SNR_{linear} = \frac{P_{sinal}}{P_{ruido}}
 \end{equation}
 
-Sendo $P_{sinal}$ e $P_{ruido}$ a potência média do sinal e a potência do ruído, respectivamente. 
+\begin{equation} \label{eq:28}
+    SNR_{linear} = 10^{\frac{SNR}{10}}
+\end{equation}
+
+Sendo $P_{sinal}$ e $P_{ruido}$ a potência do sinal e a potência do ruído, respectivamente. A função gera o sinal corrompido a partir 
+de um desvio padrão do ruído, $\sigma$, calculado a partir do SNR de entrada, como definido pela \autoref{eq:29}. 
+O $\sigma$ é calculado a partir da potência do sinal de entrada, calculado pela \autoref{eq:30}, do valor de SNR linear, calculado pela 
+\autoref{eq:28}, e de uma variável $r$ no divisor, definida pelo algoritmo como "Taxa do código FEC se usado", que aqui será omitida por 
+ter tido valor 1.
+
+\begin{equation} \label{eq:31}
+    \begin{aligned}
+        SNR_{linear} & = \frac{P_{sinal}}{P_{ruido}} \\
+        P_{ruido} & = \frac{P_{sinal}}{SNR_{linear}} \\
+        P_{ruido} & = 2\sigma^2 \\
+    \end{aligned}
+\end{equation}
+
+\begin{equation} \label{eq:29}
+    \sigma^2 = \frac{P_{sinal}}{2 SNR_{linear}}
+\end{equation}
+
+\begin{equation} \label{eq:30}
+    P_{sinal} = \frac{1}{N} \sum_{min}^{max} |x(i)^2|
+\end{equation}
+
+A corrupção é feita com ruído gaussiano, diretamente no espectro do sinal.
 
 
 \section{Resultados}
@@ -377,7 +438,6 @@ Realizada a etapa de filtragem em um sinal sem ruído, foi implementada então a
 anteriormente usado foi corrompido com um SNR de valor $15 dB$. A \autoref{fig:9} demonstra um exemplo da decomposição e reconstrução desse sinal 
 corrompido, para $L$ de $40\%$ e limite de ruído de $1^{-24}$. O limite de ruído foi escolhido extremamente baixo de maneira a testar se o algoritmo 
 continuava a funcionar após implementação da etapa de SVD. 
-
 
 \begin{figure} [H]
     \includegraphics[scale=0.5]{mpm-com-ruido.png}
@@ -463,7 +523,6 @@ do MPM, porém novamente, quando analisada sob o contexto das outras variáveis,
 \begin{figure} [H]
     \centering
     \includegraphics[scale=0.625]{vars-total.png}
-
     \caption{Valor das variáveis para o segundo SNR, de valor $100$}
     \label{fig:7}
 \end{figure}
@@ -478,10 +537,61 @@ Outra relação explorada por meio do MPM foi o comportamento das frequências d
 \autoref{sec:sinal-unico}, de pico único, de maneira a simplificar a análise. Esse sinal foi corrompido com ruídos de SNRs resultantes no intervalo de 
 $1.0$ a $100.0$, com passos não lineares. Cada sinal corrompido era desconstruído pelo MPM e tinha suas variáveis calculadas. Foi realizada então uma filtragem a 
 partir do valor de seus picos $S_0$, na qual se calculava o maior pico, e a partir dele eram escolhidos os $n$ picos com valor maior ou igual a $5\%$ do maior pico. 
-Esse procedimento foi realizado $50$ vezes para cada SNR, paara análise estatística.
+Esse procedimento foi realizado $50$ vezes para cada SNR, para análise estatística.
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.5]{picos.png}
+    \caption{Comportamento dos picos com a progressão do SNR.}
+    \label{fig:10}
+\end{figure}
  
+É possível verificar pela \autoref{fig:10}, dentro de um certo intervalo, um comportamento de decrescimento na quantidade de picos identificados pelo processo descrito 
+anteriormente. Apesar da grande dispersão do número médio de picos para SNRs baixos. Além disso, foi calculado o RMSE entre o sinal total original e o RMSE ao redor do 
+pico principal, e como também pode ser constatado pela \autoref{fig:10}, mesmo para os SNRs mais baixos, se escolher-se reconstruir o sinal apenas com os picos pelo critério 
+especificado, o erro da reconstrução será baixo, diminuindo de maneira exponencial conforme o valor do SNR do sinal aumenta.
 
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.5]{original-filtrado-residuo-1.png}
+    \caption{Exemplo de sinal composto apenas com picos pelo critério estabelecido para 1dB}
+    \label{fig:11}
+\end{figure}
 
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.5]{real-imag-modulo-1.png}
+    \caption{Picos selecionados pelo critério estabelecido para 1dB}
+    \label{fig:12}
+\end{figure}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.5]{original-filtrado-residuo-10.png}
+    \caption{Exemplo de sinal composto apenas com picos pelo critério estabelecido para 10dB}
+    \label{fig:13}
+\end{figure}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.5]{real-imag-modulo-10.png}
+    \caption{Picos selecionados pelo critério estabelecido para 10dB}
+    \label{fig:14}
+\end{figure}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.5]{original-filtrado-residuo-25.png}
+    \caption{Exemplo de sinal composto apenas com picos pelo critério estabelecido para 25dB}
+    \label{fig:15}
+\end{figure}
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[scale=0.5]{real-imag-modulo-25.png}
+    \caption{Picos selecionados pelo critério estabelecido para 25dB}
+    \label{fig:16}
+\end{figure}
  
 \section{Conclusão}
 
