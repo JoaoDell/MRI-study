@@ -373,6 +373,7 @@ def fourier_spectrum(sig : np.ndarray, dt : float, B0 : float):
 def plot_chem_shifts(freqs : np.ndarray, 
                      sig_fft : np.ndarray, 
                      percentage : float, 
+                     y_offset : float = 0.0,
                      title : str = "Simulated MRS Spectra", 
                      xlabel : str = "δ (p.p.m.)",
                      ylabel : str = "Intensity (A.U.)",
@@ -409,7 +410,7 @@ def plot_chem_shifts(freqs : np.ndarray,
 
     _types = { "real" : np.real, "imag" : np.imag, "abs" : np.abs}
     
-    plt.plot(plot_freqs[:b], _types[plot_type](plot_sig_fft)[:b], c = c, label = label, linewidth = linewidth)
+    plt.plot(plot_freqs[:b], _types[plot_type](plot_sig_fft)[:b] + y_offset, c = c, label = label, linewidth = linewidth)
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)

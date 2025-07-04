@@ -51,17 +51,14 @@
 
 \section{Resumo}
 
-\begin{enumerate}
-    \item Descrever o que é "pencil" \textbf{CONCLUIDO}
-    \item Implementação do MPM sem ruído \textbf{CONCLUIDO}
-    \item Implementação do MPM com ruído \textbf{CONCLUIDO}
-    \item Separação de variáveis (s0, phi, omega, T2) \textbf{CONCLUIDO}
-    \item Testagem do L sem ruído \textbf{CONCLUIDO}
-    \item Testagem do SVD sem ruído \textbf{CONCLUIDO}
-    \item Testagem do L com ruído 
-    \item Testagem do SVD com ruído
-    \item Testagem do comportamento das variáveis separadas com a introdução de ruído de valores de sigma variados
-\end{enumerate}
+O seguinte trabalho tem como objetivo avaliar a aplicabilidade do algoritmo Matrix Pencil Method (MPM) para processamento de dados clínicos de MRS. A partir de 
+uma simulação implementada in loco baseada em parâmetros empíricos de metabólitos presentes no cérebro, foram gerados sinais sintéticos de MRS, os quais 
+foram corrompidos de maneira artificial com ruído gaussiano de valores variados. Esses sinais corrompidos foram então pós-processados por meio do algoritmo do MPM, 
+implementado com sucesso também de maneira local, baseando-se no trabalho de Yingbo Hua e Tapan Sakar [2], permitindo a recuperação dos parâmetros originais do 
+sinal, o conjunto de amplitudes $S_0$, as frequências $\omega$, as fases $\phi$, e os tempos de decaimento $T_2$. O comportamento desses parâmetros foi analisado para 
+diferentes SNR, revelando um papel importante da amplitude $S_0$ na composição do sinal. Foi também estudado o comportamento de um pico único sob efeito de ruído, 
+revelando um comportamento exponencial decrescente na quantidade de picos de valor relevante conforme o SNR crescia, com prevalência do pico único como maior valor 
+dentre todos. Espera-se elucidar melhor o comportamento de sinais clínicos sob a ótica do MPM, com perspectiva de encontrar caminhos para a melhora na qualidade de sua análise.
 
 \section{Introdução}
 
@@ -253,8 +250,8 @@ Após a construção, aplica-se uma decomposição em Valores Singulares (SVD) n
     Y = U \Sigma V^H
 \end{equation}
 
-A qual a matriz $U$, a matriz de vetores singulares à esquerda, contém os autovetores da matriz $YY^H$. $V$, chamada de matriz de vetores singulares 
-à direita, contém os autovetores da matriz $Y^HY$, e $\Sigma$, a matriz diagonal de valores singulares, contém os valores singulares de $YY^H$ e $Y^HY$.
+% A qual a matriz $U$, a matriz de vetores singulares à esquerda, contém os autovetores da matriz $YY^H$. $V$, chamada de matriz de vetores singulares 
+% à direita, contém os autovetores da matriz $Y^HY$, e $\Sigma$, a matriz diagonal de valores singulares, contém os valores singulares de $YY^H$ e $Y^HY$.
 
 Encontradas as submatrizes, o número M de polos a serem calculados é escolhido, sendo eles os M valores singulares de $\Sigma$ que mais contribuem para a matriz final. 
 A sugestão de exclusão segue a \autoref{eq:18}, sendo $\sigma_c$ o valor singular analisado, $\sigma _{max}$ o maior valor singular e $p$ a ordem do número de algarismos significativos. 
@@ -394,7 +391,7 @@ qual o sinal deve ter ao ser corrompido, e parte da definição estabelecida em 
 \end{equation}
 
 Sendo $P_{sinal}$ e $P_{ruido}$ a potência do sinal e a potência do ruído, respectivamente. A função gera o sinal corrompido a partir 
-de um desvio padrão do ruído, $\sigma$, calculado a partir do SNR de entrada, como definido pela \autoref{eq:29}. 
+de um desvio padrão do ruído, $\sigma$, calculado a partir do SNR de entrada, como definido pela \autoref{eq:29} \cite{Viswanathan2019-rj}. 
 O $\sigma$ é calculado a partir da potência do sinal de entrada, calculado pela \autoref{eq:30}, do valor de SNR linear, calculado pela 
 \autoref{eq:28}, e de uma variável $r$ no divisor, definida pelo algoritmo como "Taxa do código FEC se usado", que aqui será omitida por 
 ter tido valor 1.
@@ -499,7 +496,7 @@ análise por meio do RMSE.
 A priori, o evidente erro com relação às fases pode chamar a atenção, visto que a fase de entrada do sinal de controle era $\phi = 0$.
 Constatou-se porém, após verificar manualmente os valores de fases gerados, que sua origem reside em pequenos erros numéricos que se propagam na função 
 \textit{arctan2}, provocando um resultado de saída de aproximadamente $2\pi$ para fases calculadas, equivalente à fase esperada. Esclarecido esse 
-importante detalhe, é possível concluir que, novamente para o sinal limpo, a $p$ não demonstra nenhuma influência significativa na capacidade de cálculo das 
+importante detalhe, é possível concluir que, novamente para o sinal limpo, a variável $p$ não demonstra nenhuma influência significativa na capacidade de cálculo das 
 variáveis originais.
 
 \subsection{Relação entre as variáveis e o ruído}
@@ -551,6 +548,10 @@ anteriormente. Apesar da grande dispersão do número médio de picos para SNRs 
 pico principal, e como também pode ser constatado pela \autoref{fig:10}, mesmo para os SNRs mais baixos, se escolher-se reconstruir o sinal apenas com os picos pelo critério 
 especificado, o erro da reconstrução será baixo, diminuindo de maneira exponencial conforme o valor do SNR do sinal aumenta.
 
+As figuras \ref{fig:11}, \ref{fig:13} e \ref{fig:15} demonstram alguns exemplos de níveis de SNR, a filtragem com picos pelo critério anteriormente especificado, e o resíduo, aqui definido 
+como a subtração do sinal original pela filtragem. Analisando-as em conjunto com as figuras \ref{fig:12}, \ref{fig:14} e \ref{fig:16}, corrobora-se a percepção sobre a diminuição no número 
+de picos com o SNR, permitindo uma análise além: é possível perceber que apesar da qualidade do sinal piorar significativamente, o maior pico, correspondente ao do NAA, se mantém. 
+
 \begin{figure} [H]
     \centering
     \includegraphics[scale=0.5]{original-filtrado-residuo-1.png}
@@ -595,6 +596,13 @@ especificado, o erro da reconstrução será baixo, diminuindo de maneira expone
  
 \section{Conclusão}
 
+Considerando sua capacidade de extração de informações de sinais pós-aquisição, o MPM se mostra uma interessante ferramenta para o estudo de sinais de MRS. 
+Sua capacidade de separar os parâmetros individuais do sinal abre novos caminhos para o entendimento dos fenômenos na área, com a perspectiva de mitigar os 
+efeitos associados à corrupção por ruído em sinais clínicos, possibilitando uma análise de maior qualidade. No tocante aos testes realizados, o parâmetro de 
+amplitude, $S_0$, desempenha importante papel de filtro de parâmetros, demonstrando capacidade de seleção e modelagem do formato do sinal final. 
+Com relação ao comportamento dos picos, foi possível verificar que, apesar do número de picos de valor significativo aumentar, o maior pico ainda se manteve, 
+mesmo que com frequência distorcida. Como próxima etapa, pretende-se investigar o comportamento dos parâmetros do sinal com a sobreposição de dois picos, aumentando, 
+assim, o potencial de aplicabilidade do método.
 
 \bibliographystyle{plain}
 \bibliography{refs}

@@ -15,40 +15,67 @@
 
 \vspace{24pt}
 
-\textbf{AN NMR APPROACH TO UNDERSTAND CELLULOSE ETHER’S WATER RETENTION MECHANISM IN GLUE MORTAR}
+\textbf{MATRIX PENCIL AS A TOOL FOR PROCESSING MAGNETIC RESONANCE CLINICAL DATA: A VIABILITY ASSESSMENT}
 
 \vspace{12pt}
 
-*Luis Augusto Pereira\textsuperscript{1}, Agide Gimenez Marassi\textsuperscript{1}, Gustavo Mattos Fortes\textsuperscript{2}, Caroline Cassia Alves\textsuperscript{2}, Tito José Bonagamba\textsuperscript{1}
+*João Victor Dell Agli Floriano\textsuperscript{1}, Fernando Fernandes Paiva\textsuperscript{1}
 
 \vspace{6pt}
 
-\textsuperscript{1}São Carlos Institute of Physics, University of São Paulo, Brazil; \textsuperscript{2}Saint-Gobain, Brazil
+\textsuperscript{1}São Carlos Institute of Physics, University of São Paulo, Brazil; 
 
-*lap\_scp@usp.br
+*joaovdafloriano@usp.br
 
 \vspace{12pt}
 \begin{flushleft}
-\textbf{Keywords:} Cement mortar, cellulose ether, NMR relaxometry.
+\textbf{Keywords:} MRS, Signal Processing, MPM.
 \end{flushleft}
 
 \vspace{12pt}
 \begin{justify}
-\quad Cement-based materials, such as thin-set mortar adhesives, are globally utilized for their exceptional binding properties. While the fundamental mechanisms governing their performance are not yet fully understood, workability is known to be primarily controlled by two competing processes: hydration and water evaporation. [1] Hydration, the chemical reaction between cement and water, remains partially enigmatic despite recent advances, while evaporation represents the physical loss of unbound water from the system. Recent studies have demonstrated that cellulose ethers can effectively modulate these processes, particularly by reducing evaporation rates and modifying hydration kinetics. [2,3]
+\quad This work aims to evaluate the applicability of the Matrix Pencil Method (MPM) algorithm for processing clinical Magnetic Resonance Spectroscopy (MRS) data.
 
-This study investigates how different cellulose ether types, hydroxypropyl methylcellulose (HPMC) and hydroxyethyl methylcellulose (HEMC), and concentrations (0.1, 0.2, and 0.7 wt\%) influence the performance of three industrial-grade thin-set mortar formulations provided by Saint-Gobain. Using low-field nuclear magnetic resonance (NMR) relaxometry, we monitor molecular-level water dynamics throughout the hydration process. Transverse relaxation time (T2) measurements quantify changes in water states. [4] Complementary one-dimensional high-field magnetic resonance imaging (1D MRI) tracks spatial water distribution in real time, providing insights into water migration and localization. [5]
+\
+
+The MPM, based on the work of Yingbo Hua and Tapan Sarkar \cite{370583}, is a numerical technique for estimating signal parameters by modeling a matrix system derived from 
+the concept of a "function pencil." A main matrix is constructed from the signal itself, where each row corresponds to the signal shifted by a fixed step difference, 
+with the total shift length being L, which also defines the matrix size. This matrix is decomposed using the Singular Value Decomposition (SVD) method, and the least 
+significant values of the decomposition—typically corresponding to noise—are filtered out, reconstructing the matrix with fewer elements. After reconstruction, the 
+matrix is split into two submatrices, $Y_1$ and $Y_2$, where the former is the main matrix without its last column and the latter is the main matrix without its first column. 
+These two submatrices, through a pencil, then have their generalized eigenvalues computed, resulting in the poles $z_i$, which contain information about the frequency $\omega_i$ 
+and decay time $T_{2,i}$. From these poles, the residues $R_i$ are calculated by solving a least-squares problem. The residues, in turn, contain the remaining information about 
+the amplitude $S_{0,i}$ and phase $\omega_i$.
+
+\
+
+Using an in-house simulation based on empirical parameters of brain metabolites, synthetic MRS signals were generated and artificially corrupted with Gaussian noise, 
+varying the Signal-to-Noise Ratio (SNR) between 1 dB and 100 dB. These corrupted signals were then post-processed using the locally implemented MPM algorithm, 
+successfully recovering the original signal parameters: the set of amplitudes $S_0$, frequencies $\omega$, phases $\phi$, and decay times $T_2$.
+
+\
+
+The behavior of these parameters was analyzed for different SNR levels, revealing an important role of the amplitude $S_0$ in signal composition. The performance of a 
+single peak under noise was also studied, showing an exponentially decreasing trend in the number of relevant peaks as SNR increased, with the single peak prevailing 
+as the highest value among all.
+
+\
+
+As a next step, it is intended to investigate the behavior of signal parameters with the overlap of two peaks, thereby increasing the method's potential applicability.
 \end{justify}
 
 \vspace{24pt}
 
 \begin{flushleft}
-\textbf{REFERENCES}
+% \textbf{REFERENCES}
+
+\bibliographystyle{plain}
+\bibliography{refs}
 
 \vspace{6pt}
 
 \vspace{12pt}
 
-\textbf{Acknowledgements:} The authors thank University of São Paulo and Saint-Gobain for support, research collaboration and financial assistance.
 \end{flushleft}
 
 \end{document}
