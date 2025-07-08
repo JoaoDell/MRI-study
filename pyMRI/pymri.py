@@ -338,7 +338,7 @@ def chem_shift_from_f(f : float,
 
 def check_frequency(w : float, 
                     dt : float,
-                    print_checks : bool = False):
+                    return_checks : bool = False):
     """Checks if a given frequency or group of frequencies can be captured by a sampling step.
     
     Parameters
@@ -351,9 +351,10 @@ def check_frequency(w : float,
       Whether to print or no the checked array. If true, will print a boolean array. Default is set to `False`.
     """
     array = rad_to_hz(w) <= max_frequency(dt)
-    if print_checks==True:
-      print(array)
-    return np.all(array)
+    if return_checks==True:
+      return array
+    else:
+      return np.all(array)
 
 def fourier_spectrum(sig : np.ndarray, dt : float, B0 : float):
     """Returns the fourier spectrum and its frequencies, in terms of chemical shift, of a given signal.
@@ -372,7 +373,7 @@ def fourier_spectrum(sig : np.ndarray, dt : float, B0 : float):
 
 def plot_chem_shifts(freqs : np.ndarray, 
                      sig_fft : np.ndarray, 
-                     percentage : float, 
+                     percentage : float = 1.0, 
                      y_offset : float = 0.0,
                      title : str = "Simulated MRS Spectra", 
                      xlabel : str = "δ (p.p.m.)",
@@ -380,7 +381,8 @@ def plot_chem_shifts(freqs : np.ndarray,
                      c : str = "deeppink",
                      label : str = None,
                      plot_type : Literal["real", "imag", "abs"] = "abs",
-                     linewidth = None): 
+                     linewidth = None,
+                     plot_full_spectrum : bool = False): 
     """Plots a given spectrum in terms of its chemical shifts.
     
     Parameters
@@ -402,9 +404,17 @@ def plot_chem_shifts(freqs : np.ndarray,
     label : str = `None`
       Label of the plot
     plot_type : Literal["real", "imag", "abs"] = `abs`
-      Whether to plot the real, imaginary or absolute value of the array."""
-    plot_freqs = freqs[freqs.size//2:]
-    plot_sig_fft = sig_fft[sig_fft.size//2:]
+      Whether to plot the real, imaginary or absolute value of the array.
+    linewidth : float
+      Linewidth of the plot.
+    plot_full_spectrum : bool = `False`
+      Whether to plot the full spectrum or not, including the mirrored frequencies. Default is `False`."""
+    if plot_full_spectrum == False:
+      plot_freqs = freqs[freqs.size//2:]
+      plot_sig_fft = sig_fft[sig_fft.size//2:]
+    else:
+       plot_freqs = freqs
+       plot_sig_fft = sig_fft
 
     b = int(percentage*plot_freqs.size)
 
