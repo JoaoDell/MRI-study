@@ -36,3 +36,7 @@
 3. Escrever o resumo para :
     - Explicar bem o MPM.
     - Colocar como perspectiva para aplicação clínica, resolver picos com altos graus de superposição.
+
+
+## Reunião 15/07/2025
+1. Mudar o parâmetros de corte do svd pra ver como se comportam as variáveis com relação às frequências impossíveis, e a limpeza do sinal em si.

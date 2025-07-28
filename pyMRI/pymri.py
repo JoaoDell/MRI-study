@@ -454,7 +454,7 @@ def y2y1_matrices(  sig : np.ndarray,
 
 def filter_sig(sig : np.ndarray, 
                L : float, 
-               noise_threshold : float, 
+               p : float, 
                rcond : float = 1e-7,
                zero_filtering : float = 1e-15,
                return_poles_and_res : bool = False,
@@ -469,18 +469,20 @@ def filter_sig(sig : np.ndarray,
     L : float `[0.0, 1.0]`
         The percentage of the size of the signal where the signal will be sliced.\n
         Signal slice will be of size `int(L*N)`, where `N` is the total size of the signal.
-    noise_threshold : float
-        Threshold for filtering the singular values. 
-        `singular_value/max_singular_value <= noise_threshold` will be filtered out.
+    p : float
+        Order threshold for filtering the singular values. 
+        `singular_value/max_singular_value <= np.power(10.0, -p)` will be filtered out.
     rcond : float = `1e-7`
         Threshold for filtering singular values in the Moore-Penrose and least-squares steps. 
         Default is set to `1e-7`.
+    zero_filtering : float = `1e-15`
+        Threshold for rounding near-zero values to zero. Default is `1e-15`.
     return_poles_and_res : bool = `False`
         Whether to return or not the poles and residues. If True, will return the reconstructed signal, 
         the poles and residues in a tuple.
     return_full_arrays : bool = `False`
-      Whether to return the full arrays or sliced where the values are near-zero, delimited by the `noise_threshold` variable. 
-      Default is `False`."""
+        Whether to return the full arrays or sliced where the values are near-zero, delimited by the `zero_filtering` variable. 
+        Default is `False`."""
     # Matrix Y generation step
     N = sig.size
     L_ = int(L*N)
@@ -489,7 +491,7 @@ def filter_sig(sig : np.ndarray,
     # SVD noise filtering step
     U, Sigma, Vt = np.linalg.svd(Y, full_matrices=False)
     max_sval = Sigma[0]
-    M = Sigma[Sigma/max_sval > noise_threshold].size
+    M = Sigma[Sigma/max_sval > np.power(10.0, -p)].size
     # below an alternate step that considers the percentage of contribution 
     # of the total eigenvalues and not the singular values (singular values = sqrt(eigenvalues))
     # M = Sigma[Sigma**2/np.sum(Sigma**2) > noise_threshold].size 
@@ -504,6 +506,7 @@ def filter_sig(sig : np.ndarray,
     # Eigenvalues calculation step
     w = np.linalg.eigvals(A)
 
+
     # Zero values filtering
     w.real[np.abs(w.real) <= zero_filtering] = 0
     w.imag[np.abs(w.imag) <= zero_filtering] = 0
@@ -515,6 +518,9 @@ def filter_sig(sig : np.ndarray,
     for i in range(N):
         Zs[i] = np.power(w, i)
 
+    # below an alternate step to calculating the residues. It uses the Moore-Penrose pseudoinverse
+    # as a more direct approach, producing the same result
+    # R = np.matmul(np.linalg.pinv(Zs, rcond=rcond), sig)
     R = np.linalg.lstsq(Zs, sig, rcond=rcond)[0].astype(np.complex128)
 
     # Zero values filtering
@@ -534,6 +540,68 @@ def filter_sig(sig : np.ndarray,
       return reconstructed_sig
     else: 
        return reconstructed_sig, w, R
+    
+
+def assess_conditions(sig : np.ndarray, 
+               L : float, 
+               p : float, 
+               rcond : float = 1e-7,
+               zero_filtering : float = 1e-15):
+    """Assesses thew condition of the several matrices used in the MPM process by the condition number.
+    Derived from the `filter_sig` function.
+    
+    Parameters
+    ----------
+    sig : np.ndarray
+        Signal to be filtered.
+    L : float `[0.0, 1.0]`
+        The percentage of the size of the signal where the signal will be sliced.\n
+        Signal slice will be of size `int(L*N)`, where `N` is the total size of the signal.
+    p : float
+        Order threshold for filtering the singular values. 
+        `singular_value/max_singular_value <= np.power(10.0, -p)` will be filtered out.
+    rcond : float = `1e-7`
+        Threshold for filtering singular values in the Moore-Penrose and least-squares steps. 
+        Default is set to `1e-7`.
+    zero_filtering : float = `1e-15`
+        Threshold for rounding near-zero values to zero. Default is `1e-15`."""
+    # Matrix Y generation step
+    N = sig.size
+    L_ = int(L*N)
+    Y = y2y1_matrices(sig, L, return_y=True)
+
+    # SVD noise filtering step
+    U, Sigma, Vt = np.linalg.svd(Y, full_matrices=False)
+    max_sval = Sigma[0]
+    M = Sigma[Sigma/max_sval > np.power(10.0, -p)].size
+
+    Y_ = np.matmul( np.matmul(U, np.diag(Sigma)[:, :M]), Vt[:M, :] ) # filtered Y
+
+    Y2, Y1 = Y_[:,1:], Y_[:,:L_] #Y2, Y1
+
+    y1_cond = np.linalg.cond(Y1)
+
+    # Matrix Y1^+Y2 construction step
+    Y1_p = np.linalg.pinv(Y1, rcond=rcond)
+    A = np.matmul(Y1_p, Y2)
+
+    # Eigenvalues calculation step
+    a_cond = np.linalg.cond(A)
+    w = np.linalg.eigvals(A)
+
+
+    # Zero values filtering
+    w.real[np.abs(w.real) <= zero_filtering] = 0
+    w.imag[np.abs(w.imag) <= zero_filtering] = 0
+
+    # Residues calculation step
+    Zs = np.zeros((N, w.shape[0]), dtype=np.complex128)
+    for i in range(N):
+        Zs[i] = np.power(w, i)
+      
+    zs_cond = np.linalg.cond(Zs)
+
+    return y1_cond, a_cond, zs_cond
   
 def calculate_variables_from_z_and_r(z : np.complex128, r : np.complex128, ts : float):
     """Calculates the variables `S_0`, `phi`, `omega` and `alpha` from the poles `z` and residues `r`, 
