@@ -276,13 +276,13 @@ def population(ws : float,
   Parameters
   ----------
   ws : float                                  [rad/s]
-    Gamma of the population.
+    Fequencies of the population.
   T2s : np.ndarray                            [s]
-    Decaying time T2.
+    Decaying times T2.
   M_0 : float                                 [T]
-    Initial magnetization value of each spin. 
+    Initial magnetization values of each spin. 
   phi : np.ndarray                            [rad]
-    Initial phase of each spin.
+    Initial phases of each spin.
   """
   return (ws, T2s, M_0, phi)
 
