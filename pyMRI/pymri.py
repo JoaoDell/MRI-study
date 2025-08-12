@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 from typing import Literal
 
 T1_EXAMPLES = {'Substância Branca' : 790*1e-3, 
@@ -391,8 +392,8 @@ def plot_chem_shifts(freqs : np.ndarray,
       Frequencies array.
     sig_fft : np.ndarray
       Signal spectrum array.
-    percentage : float (0.0, 1.0]
-      Percentage of the signal to be displayed.
+    percentage : float (0.0, 1.0] = `1.0`
+      Percentage of the signal to be displayed. Default is `1.0`.
     title : str = `"Simulated MRS Spectra"`
       Title of the plot.
     xlabel : str = `"δ (p.p.m.)"`
@@ -421,6 +422,72 @@ def plot_chem_shifts(freqs : np.ndarray,
     _types = { "real" : np.real, "imag" : np.imag, "abs" : np.abs}
     
     plt.plot(plot_freqs[:b], _types[plot_type](plot_sig_fft)[:b] + y_offset, c = c, label = label, linewidth = linewidth)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    if plt.gca().xaxis_inverted() == False:
+      plt.gca().invert_xaxis() #inverts the x axis
+    plt.grid(True)
+
+def sns_plot_chem_shifts(freqs : np.ndarray, 
+                     sig_fft : np.ndarray, 
+                     hue : np.ndarray,
+                     palette, 
+                     hue_label : str = None,
+                     title : str = "Simulated MRS Spectra", 
+                     xlabel : str = "δ (p.p.m.)",
+                     ylabel : str = "Intensity (A.U.)",
+                     plot_type : Literal["real", "imag", "abs"] = "abs",
+                     linewidth = None,
+                     plot_full_spectrum : bool = False): 
+    """Plots a given spectrum in terms of its chemical shifts.
+    
+    Parameters
+    ----------
+    freqs : np.ndarray
+      Frequencies array.
+    sig_fft : np.ndarray
+      Signal spectrum array.
+    hue : np.ndarray
+      Array that contains the values that map the `freqs` and `sig_fft` values to the color palette.
+      If there is an array [1, 2, 3, 4] and it is desired to plot the first two columns as red and 
+      the latter ones as yellow, hue should be [1, 1, 2, 2] and the `palette` variable should have ["red", "yellow"], 
+      where each color will be selected based on the lowest to highest value, matching values as keys.
+    title : str = `"Simulated MRS Spectra"`
+      Title of the plot.
+    xlabel : str = `"δ (p.p.m.)"`
+      X-label of the plot.
+    ylabel : str = `"Intensity (A.U.)"`
+      y-label of the plot.
+    c : str = `"deeppink"`
+      Matplotlib color of the plot.
+    label : str = `None`
+      Label of the plot
+    plot_type : Literal["real", "imag", "abs"] = `abs`
+      Whether to plot the real, imaginary or absolute value of the array.
+    linewidth : float
+      Linewidth of the plot.
+    plot_full_spectrum : bool = `False`
+      Whether to plot the full spectrum or not, including the mirrored frequencies. Default is `False`."""
+    if plot_full_spectrum == False:
+      if len(freqs.shape) == 1:
+        plot_freqs = freqs[freqs.size//2:]
+        plot_sig_fft = sig_fft[sig_fft.size//2:]
+      else:
+        plot_freqs = freqs[:, freqs.shape[1]//2:]
+        plot_sig_fft= sig_fft[:, sig_fft.shape[1]//2:]
+        hue = hue[:, hue.shape[1]//2:]
+    else:
+       plot_freqs = freqs
+       plot_sig_fft = sig_fft
+       
+
+    _types = { "real" : np.real, "imag" : np.imag, "abs" : np.abs}
+
+    df = {"x" : plot_freqs.flatten(), "y" : _types[plot_type](plot_sig_fft.flatten()), hue_label : hue.flatten(), "palette" : palette} 
+    
+    sns.lineplot(x="x", y="y", ax = plt.gca(), data = df,
+                 palette = palette, hue = hue_label, linewidth = linewidth)
     plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
