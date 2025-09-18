@@ -36,6 +36,8 @@ METABOLITES = {"gaba"                   : (1.9346,   19.9*1e-3, 0.2917), # (δ, 
                "cr2"                    : (3.9512,   40.0*1e-3, 0.2991),
                "cho+m-ins"              : (4.1233,    8.8*1e-3, 0.8244)}
 
+GAMMA = 42.577478461
+
 # The below was calculated in ..\examples\sigma_relations.ipynb
 A = 0.4935147915609802
 STD_A = 0.00234223322864983
@@ -357,7 +359,7 @@ def check_frequency(w : float,
     else:
       return np.all(array)
 
-def fourier_spectrum(sig : np.ndarray, dt : float, B0 : float):
+def fourier_spectrum(sig : np.ndarray, dt : float, B0 : float, unit : Literal["rad", "hz", "chem"] = "chem"):
     """Returns the fourier spectrum and its frequencies, in terms of chemical shift, of a given signal.
     
     Parameters
@@ -367,9 +369,26 @@ def fourier_spectrum(sig : np.ndarray, dt : float, B0 : float):
     dt : float          [s]
         Time step.
     B0 : float          [T]
-        Magnetic field for the chemical shift calculation."""
+        Magnetic field for the chemical shift calculation.
+    unit : Literal["rad", "hz", "chem"] = "chem"
+        The unit the frequency will be return in. "rad" returns it in rad/s, 
+        "hz" returns it in Hz, and "chem" returns it in p.p.m.
+        
+    Returns
+    -------
+    
+    freqs : np.ndarray
+      The frequency bins array.
+    sig_fft : np.ndarray
+      The FFT of the original signal."""
     sig_fft = np.fft.fftshift(np.fft.fft(sig, sig.size))
-    freqs = chem_shift_from_f(np.fft.fftshift(np.fft.fftfreq(sig.size, d = dt)), B0)
+
+    if unit == "chem":
+      freqs = chem_shift_from_f(np.fft.fftshift(np.fft.fftfreq(sig.size, d = dt)), B0)
+    elif unit == "rad":
+      freqs = hz_to_rad(np.fft.fftshift(np.fft.fftfreq(sig.size, d = dt)))
+    else:
+      freqs = np.fft.fftshift(np.fft.fftfreq(sig.size, d = dt))
     return freqs, sig_fft
 
 def plot_chem_shifts(freqs : np.ndarray, 
@@ -484,7 +503,7 @@ def sns_plot_chem_shifts(freqs : np.ndarray,
 
     _types = { "real" : np.real, "imag" : np.imag, "abs" : np.abs}
 
-    df = {"x" : plot_freqs.flatten(), "y" : _types[plot_type](plot_sig_fft.flatten()), hue_label : hue.flatten(), "palette" : palette} 
+    df = {"x" : plot_freqs.flatten(), "y" : _types[plot_type](plot_sig_fft.flatten()), hue_label : hue.flatten()} 
     
     sns.lineplot(x="x", y="y", ax = plt.gca(), data = df,
                  palette = palette, hue = hue_label, linewidth = linewidth)
@@ -807,3 +826,66 @@ def select_peaks(s0 : np.ndarray,
     n_comp = s0__.size
 
     return s0__, phi__, omega__, t2__, n_comp
+
+
+def filter_omegas(omegas : np.ndarray, dt : float):
+    """Filters a given set of calculated omegas based on the Nyquist Frequency.
+    
+    Parameters
+    ----------
+    omegas : np.ndarray [rad/s]
+        Array of omegas.
+    dt : float [s]
+        Time step of the simulation.
+        
+    Returns
+    -------
+    filtered_omegas : np.ndarray
+        Boolean array that identifies the true frequencies of the omega array."""
+    limit_omega = max_frequency(dt)
+    return rad_to_hz(omegas) <= limit_omega
+
+def filter_t2(t2s : np.ndarray, upper_bound : float = 0.5, lower_bound : float = -4.0):
+    """Filters a given set of calculated T2s based on its physicial meaning.
+    
+    Parameters
+    ----------
+    t2s : np.ndarray
+        T2s array.
+    upper_bound : float = `0.5`
+        Maximum order a T2 can have.
+    lower_bound : float `-4.0`
+        Minimum order a T2 can have.
+    
+    Returns 
+    -------
+    t2_filter_array : np.ndarray
+        Boolean array that identifies the actual possible T2s."""
+    lower_order_arr = np.log10(np.abs(t2s)) >= lower_bound
+    higher_order_arr = np.log10(np.abs(t2s)) < upper_bound
+    negative_arr = t2s >= 0.0
+    t2_filter_arr = np.bitwise_and( np.bitwise_and( lower_order_arr, higher_order_arr), negative_arr)
+    return t2_filter_arr
+
+
+def compose_filters(filters : tuple):
+    """Composes a set of given filters into one final filter.
+    
+    Parameters
+    ----------
+    filters : tuple
+        The set of filters to be composed.
+        
+    Returns
+    -------
+    final_filter : np.ndarray
+        The composition of all the filters."""
+    
+    n = len(filters)
+
+    final_filter = np.full(filters[0].shape, True, dtype = bool)
+
+    for i in range(n):
+        final_filter = np.bitwise_and(final_filter, filters[i])
+
+    return final_filter
